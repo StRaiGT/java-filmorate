@@ -7,14 +7,18 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
-public class UserController extends Controller<User> {
+public class UserController {
+    private final Map<Integer, User> users = new HashMap<>();
+    private int id = 1;
     @GetMapping
     public Collection<User> getAll() {
-        return items.values();
+        return users.values();
     }
 
     @PostMapping
@@ -22,32 +26,32 @@ public class UserController extends Controller<User> {
         log.info("Добавление пользователя {}", user);
         validate(user);
         user.setId(id++);
-        items.put(user.getId(), user);
+        users.put(user.getId(), user);
         return user;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.info("Обновление пользователя {}", user);
-        if (!items.containsKey(user.getId())) {
+        if (!users.containsKey(user.getId())) {
             String message = "Пользователя с таким id не существует.";
             log.error(message);
             throw new ValidationException(message);
         }
         validate(user);
-        items.put(user.getId(), user);
+        users.put(user.getId(), user);
         return user;
     }
 
-    protected void validate(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-
+    private void validate(User user) {
         if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
             String message = "Неправильный формат логина.";
             log.error(message);
             throw new ValidationException(message);
+        }
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
     }
 }
