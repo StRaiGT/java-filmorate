@@ -13,12 +13,16 @@ import java.time.LocalDate;
 @Builder
 public class Film {
     private int id;
+
     @NotBlank
     private String name;
+
     @Size(max=200)
     private String description;
+
     @DateTimeFormat(pattern = "YYYY-mm-dd")
     private LocalDate releaseDate;
+
     @Positive
     private int duration;
 }

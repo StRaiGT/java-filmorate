@@ -13,11 +13,16 @@ import java.time.LocalDate;
 @Builder
 public class User {
     private int id;
+
     @Email
+    @NotBlank
     private String email;
+
     @NotBlank
     private String login;
+
     private String name;
+
     @DateTimeFormat(pattern = "YYYY-mm-dd")
     @PastOrPresent
     private LocalDate birthday;
