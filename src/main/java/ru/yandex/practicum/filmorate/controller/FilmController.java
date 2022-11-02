@@ -23,7 +23,6 @@ public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
     private int id = 1;
     static final LocalDate FIRST_FILM_RELEASE_DATE = LocalDate.of(1895, 12, 28);
-    static final int MAX_DESCRIPTION_LENGTH = 200;
 
     @GetMapping
     public Collection<Film> getAll() {
@@ -58,23 +57,8 @@ public class FilmController {
     }
 
     private void validate(Film film) {
-        if (film.getName().isBlank()) {
-            String message = "Название фильма не может быть пустым";
-            log.error(message);
-            throw new ValidationException(message);
-        }
-        if (film.getDescription().length() > 200) {
-            String message = "Максимальная длина описания — " + MAX_DESCRIPTION_LENGTH + " символов";
-            log.error(message);
-            throw new ValidationException(message);
-        }
         if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE_DATE)) {
             String message = "Дата релиза фильма не может быть раньше " + FIRST_FILM_RELEASE_DATE;
-            log.error(message);
-            throw new ValidationException(message);
-        }
-        if (film.getDuration() <= 0) {
-            String message = "Продолжительность фильма должна быть положительной";
             log.error(message);
             throw new ValidationException(message);
         }

@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,18 +55,8 @@ public class UserController {
     }
 
     private void validate(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            String message = "Электронная почта не может быть пустой и должна содержать символ @";
-            log.error(message);
-            throw new ValidationException(message);
-        }
-        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+        if (user.getLogin().contains(" ")) {
             String message = "Неправильный формат логина.";
-            log.error(message);
-            throw new ValidationException(message);
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            String message = "Дата рождения пользователя не может быть в будущем";
             log.error(message);
             throw new ValidationException(message);
         }
