@@ -25,15 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilmControllerTest {
     private FilmController controller;
-    private FilmService filmService;
     private UserStorage userStorage;
-    private FilmStorage filmStorage;
 
     @BeforeEach
     public void createController() {
         userStorage = new InMemoryUserStorage();
-        filmStorage = new InMemoryFilmStorage();
-        filmService = new FilmService(filmStorage, userStorage);
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        FilmService filmService = new FilmService(filmStorage, userStorage);
         controller = new FilmController(filmService);
     }
 
