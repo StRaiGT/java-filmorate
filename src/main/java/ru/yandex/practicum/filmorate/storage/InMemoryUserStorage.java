@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@Slf4j
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private int id = 1;
@@ -18,9 +16,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User createUser(User user) {
         if (users.containsKey(user.getId())) {
-            String message = "Пользователь с таким id уже существует.";
-            log.error(message);
-            throw new UserAlreadyExistException(message);
+            throw new UserAlreadyExistException("Пользователь с таким id уже существует.");
         }
         user.setId(id++);
         users.put(user.getId(), user);
@@ -30,9 +26,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User updateUser(User user) {
         if (!users.containsKey(user.getId())) {
-            String message = "Пользователя с таким id не существует.";
-            log.error(message);
-            throw new UserNotFoundException(message);
+            throw new UserNotFoundException("Пользователя с таким id не существует.");
         }
         users.put(user.getId(), user);
         return user;
@@ -41,9 +35,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public Boolean deleteUser(int userId) {
         if (!users.containsKey(userId)) {
-            String message = "Пользователя с таким id не существует.";
-            log.error(message);
-            throw new UserNotFoundException(message);
+            throw new UserNotFoundException("Пользователя с таким id не существует.");
         }
         users.remove(userId);
         return true;
@@ -52,9 +44,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User getUser(int userId) {
         if (!users.containsKey(userId)) {
-            String message = "Пользователя с таким id не существует.";
-            log.error(message);
-            throw new UserNotFoundException(message);
+            throw new UserNotFoundException("Пользователя с таким id не существует.");
         }
         return users.get(userId);
     }

@@ -8,8 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Data
 @Builder
@@ -29,5 +29,5 @@ public class User {
     @PastOrPresent
     private LocalDate birthday;
 
-    private final Set<Integer> friends = new TreeSet<>();
+    private final Set<Integer> friends = new HashSet<>();
 }

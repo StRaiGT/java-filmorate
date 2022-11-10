@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@Slf4j
 public class InMemoryFilmStorage implements FilmStorage{
     private final Map<Integer, Film> films = new HashMap<>();
     private int id = 1;
@@ -18,9 +16,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     @Override
     public Film createFilm(Film film) {
         if (films.containsKey(film.getId())) {
-            String message = "Фильм с таким id уже существует.";
-            log.error(message);
-            throw new FilmAlreadyExistException(message);
+            throw new FilmAlreadyExistException("Фильм с таким id уже существует.");
         }
         film.setId(id++);
         films.put(film.getId(), film);
@@ -30,9 +26,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     @Override
     public Film updateFilm(Film film) {
         if (!films.containsKey(film.getId())) {
-            String message = "Фильма с таким id не существует.";
-            log.error(message);
-            throw new FilmNotFoundException(message);
+            throw new FilmNotFoundException("Фильма с таким id не существует.");
         }
         films.put(film.getId(), film);
         return film;
@@ -41,9 +35,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     @Override
     public Boolean deleteFilm(int filmId) {
         if (!films.containsKey(filmId)) {
-            String message = "Фильма с таким id не существует.";
-            log.error(message);
-            throw new FilmNotFoundException(message);
+            throw new FilmNotFoundException("Фильма с таким id не существует.");
         }
         films.remove(filmId);
         return true;
@@ -52,9 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     @Override
     public Film getFilm(int filmId) {
         if (!films.containsKey(filmId)) {
-            String message = "Фильма с таким id не существует.";
-            log.error(message);
-            throw new FilmNotFoundException(message);
+            throw new FilmNotFoundException("Фильма с таким id не существует.");
         }
         return films.get(filmId);
     }

@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilmControllerTest {
-    private static FilmController controller;
-    private static FilmService filmService;
-    private static UserStorage userStorage;
-    private static FilmStorage filmStorage;
+    private FilmController controller;
+    private FilmService filmService;
+    private UserStorage userStorage;
+    private FilmStorage filmStorage;
 
     @BeforeEach
     public void createController() {
@@ -91,7 +91,7 @@ public class FilmControllerTest {
                 .releaseDate(LocalDate.of(1600, 6, 1))
                 .build();
         ValidationException exception = assertThrows(ValidationException.class, () -> {controller.create(film);});
-        assertEquals("Дата релиза фильма не может быть раньше " + filmService.FIRST_FILM_RELEASE_DATE,
+        assertEquals("Дата релиза фильма не может быть раньше " + FilmService.FIRST_FILM_RELEASE_DATE,
                 exception.getMessage());
         assertEquals(controller.getAll().size(), 0);
     }

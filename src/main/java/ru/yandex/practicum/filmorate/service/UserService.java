@@ -25,9 +25,7 @@ public class UserService {
 
     private void validate(User user) {
         if (user.getLogin().contains(" ")) {
-            String message = "Неправильный формат логина.";
-            log.error(message);
-            throw new ValidationException(message);
+            throw new ValidationException("Неправильный формат логина.");
         }
         if (user.getName() == null || user.getName().isBlank()) {
             log.warn("Имя пользователя не передано, вместо имени установлен переданный логин.");
@@ -62,9 +60,7 @@ public class UserService {
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
         if (userId == friendId) {
-            String message = "Пользователь не может добавить в друзья себя самого.";
-            log.error(message);
-            throw new IllegalAddFriendException(message);
+            throw new IllegalAddFriendException("Пользователь не может добавить в друзья себя самого.");
         }
 
         user.getFriends().add(friendId);
@@ -77,9 +73,7 @@ public class UserService {
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
         if (!user.getFriends().contains(friendId) || !friend.getFriends().contains(userId)) {
-            String message = "Пользователи не являются друзьями.";
-            log.error(message);
-            throw new UsersNotFriendsException(message);
+            throw new UsersNotFriendsException("Пользователи не являются друзьями.");
         }
 
         user.getFriends().remove(friendId);
@@ -90,7 +84,7 @@ public class UserService {
     public List<User> getUserFriends(int userId) {
         log.info("Выводим друзей пользователя с id {}.", userId);
         return userStorage.getUser(userId).getFriends().stream()
-                .map(u -> userStorage.getUser(u))
+                .map(userStorage::getUser)
                 .collect(Collectors.toList());
     }
 
@@ -100,7 +94,7 @@ public class UserService {
         User friend = userStorage.getUser(friendId);
         return user.getFriends().stream()
                 .filter(u -> friend.getFriends().contains(u))
-                .map(u -> userStorage.getUser(u))
+                .map(userStorage::getUser)
                 .collect(Collectors.toList());
     }
 }

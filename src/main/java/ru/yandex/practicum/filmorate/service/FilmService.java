@@ -30,9 +30,7 @@ public class FilmService {
 
     private void validate(Film film) {
         if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE_DATE)) {
-            String message = "Дата релиза фильма не может быть раньше " + FIRST_FILM_RELEASE_DATE;
-            log.error(message);
-            throw new ValidationException(message);
+            throw new ValidationException("Дата релиза фильма не может быть раньше " + FIRST_FILM_RELEASE_DATE);
         }
     }
 
@@ -67,12 +65,10 @@ public class FilmService {
 
     public Boolean removeLike(int filmId, int userId) {
         log.info("Удаляем лайк пользователя с id {} фильму с id {}.", userId, filmId);
-        User user = userStorage .getUser(userId);
+        User user = userStorage.getUser(userId);
         Film film = filmStorage.getFilm(filmId);
         if (!film.getLikes().contains(userId)) {
-            String message = "Пользователь не поставил лайк фильму.";
-            log.error(message);
-            throw new UserNotLikeFilmException(message);
+            throw new UserNotLikeFilmException("Пользователь не поставил лайк фильму.");
         }
         film.getLikes().remove(userId);
         return true;
