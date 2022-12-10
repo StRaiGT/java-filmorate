@@ -1,17 +1,19 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
 public class Film {
     private int id;
@@ -28,5 +30,6 @@ public class Film {
     @Positive
     private int duration;
 
-    private final Set<Integer> likes = new TreeSet<>();
+    private final Mpa mpa;
+    private final List<Genre> genres = new ArrayList<>();
 }

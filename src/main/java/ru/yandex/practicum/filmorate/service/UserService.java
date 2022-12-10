@@ -4,14 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IllegalAddFriendException;
-import ru.yandex.practicum.filmorate.exception.UsersNotFriendsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -50,51 +47,31 @@ public class UserService {
         return userStorage.getUser(userId);
     }
 
-    public Collection<User> getAllUsers() {
+    public List<User> getAllUsers() {
         log.info("Вывод всех пользователей.");
-        return userStorage.getAllUsers().values();
+        return userStorage.getAllUsers();
     }
 
     public Boolean addFriend(int userId, int friendId) {
         log.info("Добавляем в друзья пользователей с id {} и {}.", userId, friendId);
-        User user = userStorage.getUser(userId);
-        User friend = userStorage.getUser(friendId);
         if (userId == friendId) {
             throw new IllegalAddFriendException("Пользователь не может добавить в друзья себя самого.");
         }
-
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
-        return true;
+        return userStorage.addFriend(userId, friendId);
     }
 
     public Boolean removeFriend(int userId, int friendId) {
         log.info("Удаляем из друзей пользователей с id {} и {}.", userId, friendId);
-        User user = userStorage.getUser(userId);
-        User friend = userStorage.getUser(friendId);
-        if (!user.getFriends().contains(friendId) || !friend.getFriends().contains(userId)) {
-            throw new UsersNotFriendsException("Пользователи не являются друзьями.");
-        }
-
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
-        return true;
+        return userStorage.removeFriend(userId, friendId);
     }
 
     public List<User> getUserFriends(int userId) {
         log.info("Выводим друзей пользователя с id {}.", userId);
-        return userStorage.getUser(userId).getFriends().stream()
-                .map(userStorage::getUser)
-                .collect(Collectors.toList());
+        return userStorage.getUserFriends(userId);
     }
 
     public List<User> getUserCommonFriends(int userId, int friendId) {
         log.info("Выводим общих друзей пользователей с id {} и {}.", userId, friendId);
-        User user = userStorage.getUser(userId);
-        User friend = userStorage.getUser(friendId);
-        return user.getFriends().stream()
-                .filter(u -> friend.getFriends().contains(u))
-                .map(userStorage::getUser)
-                .collect(Collectors.toList());
+        return userStorage.getUserCommonFriends(userId, friendId);
     }
 }
