@@ -34,14 +34,17 @@ public class DbUserStorage implements UserStorage{
             final String sqlQuery = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) " +
                     "VALUES (?, ?, ?, ?);";
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
-                ps.setString(1, user.getEmail());
-                ps.setString(2, user.getLogin());
-                ps.setString(3, user.getName());
-                ps.setDate(4, Date.valueOf(user.getBirthday()));
-                return ps;
-            }, keyHolder);
+            jdbcTemplate.update(
+                    connection -> {
+                        PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
+                        ps.setString(1, user.getEmail());
+                        ps.setString(2, user.getLogin());
+                        ps.setString(3, user.getName());
+                        ps.setDate(4, Date.valueOf(user.getBirthday()));
+                        return ps;
+                        },
+                    keyHolder
+            );
             user.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
             return user;
         } catch (DuplicateKeyException e) {
@@ -94,11 +97,7 @@ public class DbUserStorage implements UserStorage{
         try {
             final String sqlQuery = "INSERT INTO FRIENDSHIP (USER_ID, FRIEND_ID) " +
                     "VALUES (?, ?)";
-            jdbcTemplate.update(
-                    sqlQuery,
-                    userId,
-                    friendId
-            );
+            jdbcTemplate.update(sqlQuery, userId, friendId);
             return true;
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("Пользователя с таким id не существует.");
@@ -110,10 +109,7 @@ public class DbUserStorage implements UserStorage{
         final String sqlQuery = "DELETE FROM FRIENDSHIP " +
                 "WHERE USER_ID = ? " +
                 "AND FRIEND_ID = ?";
-        jdbcTemplate.update(
-                sqlQuery,
-                userId,
-                friendId);
+        jdbcTemplate.update(sqlQuery, userId, friendId);
         return true;
     }
 

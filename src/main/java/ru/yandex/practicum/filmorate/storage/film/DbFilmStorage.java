@@ -40,18 +40,21 @@ public class DbFilmStorage implements FilmStorage {
             final String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) " +
                     "VALUES (?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
-                ps.setString(1, film.getName());
-                ps.setString(2, film.getDescription());
-                ps.setDate(3, Date.valueOf(film.getReleaseDate()));
-                ps.setInt(4, film.getDuration());
-                ps.setInt(5, film.getMpa().getId());
-                return ps;
-            }, keyHolder);
+            jdbcTemplate.update(
+                    connection -> {
+                        PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
+                        ps.setString(1, film.getName());
+                        ps.setString(2, film.getDescription());
+                        ps.setDate(3, Date.valueOf(film.getReleaseDate()));
+                        ps.setInt(4, film.getDuration());
+                        ps.setInt(5, film.getMpa().getId());
+                        return ps;
+                        },
+                    keyHolder
+            );
             film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         } catch (DuplicateKeyException e) {
-            throw new AlreadyExistException("Фильм с таким id уже существует.");
+            throw new AlreadyExistException("Фильм с таким названием уже существует.");
         }
         addFilmGenres(film);
         return getFilm(film.getId());
@@ -111,8 +114,7 @@ public class DbFilmStorage implements FilmStorage {
             final String sqlQuery = "INSERT INTO FILMS_GENRES " +
                     "VALUES (?, ?)";
             List<Object[]> batch = new ArrayList<>();
-            film.getGenres()
-                    .stream()
+            film.getGenres().stream()
                     .map(Genre::getId)
                     .distinct()
                     .forEach(genreId -> batch.add(new Object[]{film.getId(), genreId}));
@@ -127,13 +129,12 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     public Boolean addLike(int filmId, int userId) {
+        getFilm(filmId);
+        dbUserStorage.getUser(userId);
+
         final String sqlQuery = "MERGE INTO LIKES (FILM_ID, USER_ID) " +
                 "VALUES (?, ?)";
-        jdbcTemplate.update(
-                sqlQuery,
-                filmId,
-                userId
-        );
+        jdbcTemplate.update(sqlQuery, filmId, userId);
         return true;
     }
 
@@ -144,11 +145,7 @@ public class DbFilmStorage implements FilmStorage {
         final String sqlQuery = "DELETE FROM LIKES " +
                 "WHERE FILM_ID = ?" +
                 "AND USER_ID = ?";
-        jdbcTemplate.update(
-                sqlQuery,
-                filmId,
-                userId
-        );
+        jdbcTemplate.update(sqlQuery, filmId, userId);
         return true;
     }
 
@@ -160,14 +157,13 @@ public class DbFilmStorage implements FilmStorage {
                 "JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
                 "LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
                 "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
-                "WHERE f.FILM_ID IN (" +
-                    "SELECT f.FILM_ID " +
+                "LEFT JOIN (" +
+                    "SELECT l.FILM_ID, COUNT(l.USER_ID) AS rate " +
                     "FROM LIKES AS l " +
-                    "RIGHT JOIN FILMS AS f ON f.FILM_ID = l.FILM_ID " +
-                    "GROUP BY f.FILM_ID " +
-                    "ORDER BY COUNT(USER_ID) DESC " +
-                    "LIMIT ?" +
-                ")";
+                    "GROUP BY l.FILM_ID" +
+                ") AS r ON f.FILM_ID = r.FILM_ID " +
+                "ORDER BY r.rate DESC " +
+                "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, DbFilmStorage::makeFilms, count);
     }
 
@@ -177,16 +173,16 @@ public class DbFilmStorage implements FilmStorage {
             int id = resultSet.getInt("FILM_ID");
 
             films.putIfAbsent(id, Film.builder()
-                            .id(resultSet.getInt("FILM_ID"))
-                            .name(resultSet.getString("FILMS.NAME"))
-                            .description(resultSet.getString("FILMS.DESCRIPTION"))
-                            .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
-                            .duration(resultSet.getInt("DURATION"))
-                            .mpa(Mpa.builder()
-                                    .id(resultSet.getInt("MPA_ID"))
-                                    .name(resultSet.getString("MPA.NAME"))
-                                    .description(resultSet.getString("MPA.DESCRIPTION"))
-                                    .build())
+                    .id(resultSet.getInt("FILM_ID"))
+                    .name(resultSet.getString("FILMS.NAME"))
+                    .description(resultSet.getString("FILMS.DESCRIPTION"))
+                    .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                    .duration(resultSet.getInt("DURATION"))
+                    .mpa(Mpa.builder()
+                            .id(resultSet.getInt("MPA_ID"))
+                            .name(resultSet.getString("MPA.NAME"))
+                            .description(resultSet.getString("MPA.DESCRIPTION"))
+                            .build())
                     .build()
             );
 
