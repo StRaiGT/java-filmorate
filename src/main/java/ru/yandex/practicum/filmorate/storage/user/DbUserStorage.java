@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -20,13 +20,9 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
+@RequiredArgsConstructor
 public class DbUserStorage implements UserStorage{
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public DbUserStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public User createUser(User user) {
@@ -79,7 +75,7 @@ public class DbUserStorage implements UserStorage{
             final String sqlQuery = "SELECT * " +
                 "FROM USERS " +
                 "WHERE USER_ID = ?";
-            return jdbcTemplate.queryForObject(sqlQuery, DbUserStorage::makeUser, userId);
+            return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, userId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователя с таким id не существует.");
         }
@@ -89,7 +85,7 @@ public class DbUserStorage implements UserStorage{
     public List<User> getAllUsers() {
         final String sqlQuery = "SELECT * " +
                 "FROM USERS";
-        return jdbcTemplate.query(sqlQuery, DbUserStorage::makeUser);
+        return jdbcTemplate.query(sqlQuery, this::makeUser);
     }
 
     @Override
@@ -122,7 +118,7 @@ public class DbUserStorage implements UserStorage{
                     "FROM FRIENDSHIP " +
                     "WHERE USER_ID = ?" +
                 ")";
-        return jdbcTemplate.query(sqlQuery, DbUserStorage::makeUser, userId);
+        return jdbcTemplate.query(sqlQuery, this::makeUser, userId);
     }
 
     public List<User> getUserCommonFriends(int userId, int friendId) {
@@ -136,10 +132,10 @@ public class DbUserStorage implements UserStorage{
                     "SELECT FRIEND_ID " +
                     "FROM FRIENDSHIP " +
                     "where USER_ID = ?)";
-        return jdbcTemplate.query(sqlQuery, DbUserStorage::makeUser, userId, friendId);
+        return jdbcTemplate.query(sqlQuery, this::makeUser, userId, friendId);
     }
 
-    public static User makeUser(ResultSet resultSet, int rowNum) throws SQLException {
+    private User makeUser(ResultSet resultSet, int rowNum) throws SQLException {
         return User.builder()
                 .id(resultSet.getInt("USER_ID"))
                 .email(resultSet.getString("EMAIL"))

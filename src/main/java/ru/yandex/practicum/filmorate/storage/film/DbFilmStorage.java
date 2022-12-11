@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -24,15 +24,10 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
+@RequiredArgsConstructor
 public class DbFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final DbUserStorage dbUserStorage;
-
-    @Autowired
-    public DbFilmStorage(JdbcTemplate jdbcTemplate, DbUserStorage dbUserStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.dbUserStorage = dbUserStorage;
-    }
 
     @Override
     public Film createFilm(Film film) {
@@ -42,13 +37,13 @@ public class DbFilmStorage implements FilmStorage {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(
                     connection -> {
-                        PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
-                        ps.setString(1, film.getName());
-                        ps.setString(2, film.getDescription());
-                        ps.setDate(3, Date.valueOf(film.getReleaseDate()));
-                        ps.setInt(4, film.getDuration());
-                        ps.setInt(5, film.getMpa().getId());
-                        return ps;
+                        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
+                        preparedStatement.setString(1, film.getName());
+                        preparedStatement.setString(2, film.getDescription());
+                        preparedStatement.setDate(3, Date.valueOf(film.getReleaseDate()));
+                        preparedStatement.setInt(4, film.getDuration());
+                        preparedStatement.setInt(5, film.getMpa().getId());
+                        return preparedStatement;
                         },
                     keyHolder
             );
@@ -89,7 +84,7 @@ public class DbFilmStorage implements FilmStorage {
                 "LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
                 "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
                 "WHERE f.film_id = ?";
-        List<Film> films = jdbcTemplate.query(sqlQuery, DbFilmStorage::makeFilms, filmId);
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilms, filmId);
 
         if (films.size() == 0) {
             throw new NotFoundException("Фильма с таким id не существует.");
@@ -106,7 +101,7 @@ public class DbFilmStorage implements FilmStorage {
                 "JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
                 "LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
                 "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID";
-        return jdbcTemplate.query(sqlQuery, DbFilmStorage::makeFilms);
+        return jdbcTemplate.query(sqlQuery, this::makeFilms);
     }
 
     private void addFilmGenres(Film film) {
@@ -164,10 +159,10 @@ public class DbFilmStorage implements FilmStorage {
                 ") AS r ON f.FILM_ID = r.FILM_ID " +
                 "ORDER BY r.rate DESC " +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, DbFilmStorage::makeFilms, count);
+        return jdbcTemplate.query(sqlQuery, this::makeFilms, count);
     }
 
-    public static List<Film> makeFilms(ResultSet resultSet) throws SQLException {
+    private List<Film> makeFilms(ResultSet resultSet) throws SQLException {
         Map<Integer, Film> films = new HashMap<>();
         while (resultSet.next()) {
             int id = resultSet.getInt("FILM_ID");

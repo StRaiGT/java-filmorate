@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.mpa;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -12,19 +12,15 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class DbMpaStorage implements MpaStorage{
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public DbMpaStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Mpa> getAllMpa() {
         final String sqlQuery = "SELECT * " +
                 "FROM MPA";
-        return jdbcTemplate.query(sqlQuery, DbMpaStorage::makeMpa);
+        return jdbcTemplate.query(sqlQuery, this::makeMpa);
     }
 
     @Override
@@ -33,13 +29,13 @@ public class DbMpaStorage implements MpaStorage{
             final String sqlQuery = "SELECT * " +
                     "FROM MPA " +
                     "WHERE MPA_ID = ?";
-            return jdbcTemplate.queryForObject(sqlQuery, DbMpaStorage::makeMpa, id);
+            return jdbcTemplate.queryForObject(sqlQuery, this::makeMpa, id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Рейтинга MPA с таким id не существует.");
         }
     }
 
-    public static Mpa makeMpa(ResultSet resultSet, int rowNum) throws SQLException {
+    private Mpa makeMpa(ResultSet resultSet, int rowNum) throws SQLException {
         return Mpa.builder()
                 .id(resultSet.getInt("MPA_ID"))
                 .name(resultSet.getString("NAME"))
