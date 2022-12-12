@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,21 +13,16 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @GetMapping
-    public Collection<User> getAll() {
+    public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
@@ -47,12 +42,12 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         return userService.createUser(user);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         return userService.updateUser(user);
     }
 

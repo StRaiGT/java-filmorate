@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,21 +14,16 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
 
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
     @GetMapping
-    public Collection<Film> getAll() {
+    public List<Film> getAllFilms() {
         return filmService.getAllFilms();
     }
 
@@ -43,12 +38,12 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    public Film createFilm(@Valid @RequestBody Film film) {
         return filmService.createFilm(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         return filmService.updateFilm(film);
     }
 
