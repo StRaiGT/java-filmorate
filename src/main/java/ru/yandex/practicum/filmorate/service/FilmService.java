@@ -3,11 +3,13 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -59,5 +61,18 @@ public class FilmService {
     public List<Film> getTopRatedFilms(int count) {
         log.info("Возвращаем топ {} фильмов.", count);
         return filmStorage.getTopRatedFilms(count);
+    }
+
+    public List<Film> getFilmsByDirector(int directorId, String sortBy) {
+        log.info("Возвращаем фильмы режиссера с id {}.", directorId);
+        List<Film> films;
+        if (sortBy.equals("likes")) {
+            films = filmStorage.getFilmsByDirectorSortLikes(directorId);
+        } else if (sortBy.equals("year")) {
+            films = filmStorage.getFilmsByDirectorSortYear(directorId);
+        } else {
+            throw new ValidationException(String.format("Некорректные параметры сортировки в запросе."));
+        }
+        return films;
     }
 }

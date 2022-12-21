@@ -7,7 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class Genre {
+public class Genre implements Comparable<Genre> {
     private Integer id;
     private String name;
+
+    @Override
+    public int compareTo(Genre o) {
+        return this.id - o.getId();
+    }
 }

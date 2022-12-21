@@ -9,9 +9,14 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @Builder
-public class Director {
+public class Director implements Comparable<Director>{
     private Integer id;
 
     @NotBlank
     private String name;
+
+    @Override
+    public int compareTo(Director o) {
+        return this.id - o.getId();
+    }
 }

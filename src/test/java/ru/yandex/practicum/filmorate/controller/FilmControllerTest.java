@@ -59,7 +59,8 @@ public class FilmControllerTest {
         assertEquals(filmFromController.getReleaseDate(), film.getReleaseDate());
         assertEquals(filmFromController.getMpa().getId(), film.getMpa().getId());
         assertEquals(filmFromController.getGenres().size(), film.getGenres().size());
-        assertEquals(filmFromController.getGenres().get(0).getId(), film.getGenres().get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController.getGenres()).get(0).getId(),
+                new ArrayList<>(film.getGenres()).get(0).getId());
     }
 
     @Test
@@ -139,8 +140,8 @@ public class FilmControllerTest {
         assertEquals(filmFromController.getReleaseDate(), film.getReleaseDate());
         assertEquals(filmFromController.getMpa().getId(), film.getMpa().getId());
         assertEquals(filmFromController.getGenres().size(), 2);
-        assertEquals(filmFromController.getGenres().get(0).getId(), 1);
-        assertEquals(filmFromController.getGenres().get(1).getId(), 2);
+        assertEquals(new ArrayList<>(filmFromController.getGenres()).get(0).getId(), 1);
+        assertEquals(new ArrayList<>(filmFromController.getGenres()).get(1).getId(), 2);
     }
 
     @Test
@@ -187,8 +188,10 @@ public class FilmControllerTest {
         assertEquals(filmFromController.getReleaseDate(), updatedFilm.getReleaseDate());
         assertEquals(filmFromController.getMpa().getId(), updatedFilm.getMpa().getId());
         assertEquals(filmFromController.getGenres().size(), updatedFilm.getGenres().size());
-        assertEquals(filmFromController.getGenres().get(0).getId(), updatedFilm.getGenres().get(0).getId());
-        assertEquals(filmFromController.getGenres().get(1).getId(), updatedFilm.getGenres().get(1).getId());
+        assertEquals(new ArrayList<>(filmFromController.getGenres()).get(0).getId(),
+                new ArrayList<>(updatedFilm.getGenres()).get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController.getGenres()).get(1).getId(),
+                new ArrayList<>(updatedFilm.getGenres()).get(1).getId());
     }
 
     @Test
@@ -231,7 +234,8 @@ public class FilmControllerTest {
         assertEquals(filmFromController.getReleaseDate(), film.getReleaseDate());
         assertEquals(filmFromController.getMpa().getId(), film.getMpa().getId());
         assertEquals(filmFromController.getGenres().size(), film.getGenres().size());
-        assertEquals(filmFromController.getGenres().get(0).getId(), film.getGenres().get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController.getGenres()).get(0).getId(),
+                new ArrayList<>(film.getGenres()).get(0).getId());
     }
 
     @Test
@@ -278,7 +282,8 @@ public class FilmControllerTest {
         assertEquals(filmFromController1.getReleaseDate(), film1.getReleaseDate());
         assertEquals(filmFromController1.getMpa().getId(), film1.getMpa().getId());
         assertEquals(filmFromController1.getGenres().size(), film1.getGenres().size());
-        assertEquals(filmFromController1.getGenres().get(0).getId(), film1.getGenres().get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController1.getGenres()).get(0).getId(),
+                new ArrayList<>(film1.getGenres()).get(0).getId());
 
         assertEquals(filmFromController2.getId(), film2.getId());
         assertEquals(filmFromController2.getName(), film2.getName());
@@ -287,8 +292,10 @@ public class FilmControllerTest {
         assertEquals(filmFromController2.getReleaseDate(), film2.getReleaseDate());
         assertEquals(filmFromController2.getMpa().getId(), film2.getMpa().getId());
         assertEquals(filmFromController2.getGenres().size(), film2.getGenres().size());
-        assertEquals(filmFromController2.getGenres().get(0).getId(), film2.getGenres().get(0).getId());
-        assertEquals(filmFromController2.getGenres().get(1).getId(), film2.getGenres().get(1).getId());
+        assertEquals(new ArrayList<>(filmFromController2.getGenres()).get(0).getId(),
+                new ArrayList<>(film2.getGenres()).get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController2.getGenres()).get(1).getId(),
+                new ArrayList<>(film2.getGenres()).get(1).getId());
     }
 
     @Test
@@ -321,7 +328,8 @@ public class FilmControllerTest {
         assertEquals(filmFromController.getReleaseDate(), film.getReleaseDate());
         assertEquals(filmFromController.getMpa().getId(), film.getMpa().getId());
         assertEquals(filmFromController.getGenres().size(), film.getGenres().size());
-        assertEquals(filmFromController.getGenres().get(0).getId(), film.getGenres().get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController.getGenres()).get(0).getId(),
+                new ArrayList<>(film.getGenres()).get(0).getId());
     }
 
     @Test
@@ -395,7 +403,8 @@ public class FilmControllerTest {
         assertEquals(filmFromController1.getReleaseDate(), film2.getReleaseDate());
         assertEquals(filmFromController1.getMpa().getId(), film2.getMpa().getId());
         assertEquals(filmFromController1.getGenres().size(), film2.getGenres().size());
-        assertEquals(filmFromController1.getGenres().get(0).getId(), film2.getGenres().get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController1.getGenres()).get(0).getId(),
+                new ArrayList<>(film2.getGenres()).get(0).getId());
     }
 
     @Test
@@ -497,7 +506,8 @@ public class FilmControllerTest {
         assertEquals(filmFromController1.getReleaseDate(), film2.getReleaseDate());
         assertEquals(filmFromController1.getMpa().getId(), film2.getMpa().getId());
         assertEquals(filmFromController1.getGenres().size(), film2.getGenres().size());
-        assertEquals(filmFromController1.getGenres().get(0).getId(), film2.getGenres().get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController1.getGenres()).get(0).getId(),
+                new ArrayList<>(film2.getGenres()).get(0).getId());
 
         assertTrue(filmController.removeLike(2, 1));
 
@@ -514,7 +524,8 @@ public class FilmControllerTest {
         assertEquals(filmFromController2.getReleaseDate(), film1.getReleaseDate());
         assertEquals(filmFromController2.getMpa().getId(), film1.getMpa().getId());
         assertEquals(filmFromController2.getGenres().size(), film1.getGenres().size());
-        assertEquals(filmFromController2.getGenres().get(0).getId(), film1.getGenres().get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController2.getGenres()).get(0).getId(),
+                new ArrayList<>(film1.getGenres()).get(0).getId());
     }
 
     @Test
@@ -611,7 +622,7 @@ public class FilmControllerTest {
         userStorage.createUser(user2);
 
         filmController.addLike(2, 1);
-        filmController.addLike(2, 1);
+        filmController.addLike(3, 1);
         filmController.addLike(3, 2);
         List<Film> arr = filmController.getTopRatedFilms(2);
 
@@ -620,23 +631,25 @@ public class FilmControllerTest {
         Film filmFromController1 = arr.get(0);
         Film filmFromController2 = arr.get(1);
 
-        assertEquals(filmFromController1.getId(), film2.getId());
-        assertEquals(filmFromController1.getName(), film2.getName());
-        assertEquals(filmFromController1.getDescription(), film2.getDescription());
-        assertEquals(filmFromController1.getDuration(), film2.getDuration());
-        assertEquals(filmFromController1.getReleaseDate(), film2.getReleaseDate());
-        assertEquals(filmFromController1.getMpa().getId(), film2.getMpa().getId());
-        assertEquals(filmFromController1.getGenres().size(), film2.getGenres().size());
-        assertEquals(filmFromController1.getGenres().get(0).getId(), film2.getGenres().get(0).getId());
+        assertEquals(filmFromController1.getId(), film3.getId());
+        assertEquals(filmFromController1.getName(), film3.getName());
+        assertEquals(filmFromController1.getDescription(), film3.getDescription());
+        assertEquals(filmFromController1.getDuration(), film3.getDuration());
+        assertEquals(filmFromController1.getReleaseDate(), film3.getReleaseDate());
+        assertEquals(filmFromController1.getMpa().getId(), film3.getMpa().getId());
+        assertEquals(filmFromController1.getGenres().size(), film3.getGenres().size());
+        assertEquals(new ArrayList<>(filmFromController1.getGenres()).get(0).getId(),
+                new ArrayList<>(film3.getGenres()).get(0).getId());
 
-        assertEquals(filmFromController2.getId(), film3.getId());
-        assertEquals(filmFromController2.getName(), film3.getName());
-        assertEquals(filmFromController2.getDescription(), film3.getDescription());
-        assertEquals(filmFromController2.getDuration(), film3.getDuration());
-        assertEquals(filmFromController2.getReleaseDate(), film3.getReleaseDate());
-        assertEquals(filmFromController2.getMpa().getId(), film3.getMpa().getId());
-        assertEquals(filmFromController2.getGenres().size(), film3.getGenres().size());
-        assertEquals(filmFromController2.getGenres().get(0).getId(), film3.getGenres().get(0).getId());
+        assertEquals(filmFromController2.getId(), film2.getId());
+        assertEquals(filmFromController2.getName(), film2.getName());
+        assertEquals(filmFromController2.getDescription(), film2.getDescription());
+        assertEquals(filmFromController2.getDuration(), film2.getDuration());
+        assertEquals(filmFromController2.getReleaseDate(), film2.getReleaseDate());
+        assertEquals(filmFromController2.getMpa().getId(), film2.getMpa().getId());
+        assertEquals(filmFromController2.getGenres().size(), film2.getGenres().size());
+        assertEquals(new ArrayList<>(filmFromController2.getGenres()).get(0).getId(),
+                new ArrayList<>(film2.getGenres()).get(0).getId());
     }
 
     @Test
@@ -714,7 +727,8 @@ public class FilmControllerTest {
         assertEquals(filmFromController1.getReleaseDate(), film2.getReleaseDate());
         assertEquals(filmFromController1.getMpa().getId(), film2.getMpa().getId());
         assertEquals(filmFromController1.getGenres().size(), film2.getGenres().size());
-        assertEquals(filmFromController1.getGenres().get(0).getId(), film2.getGenres().get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController1.getGenres()).get(0).getId(),
+                new ArrayList<>(film2.getGenres()).get(0).getId());
     }
 
     @Test
