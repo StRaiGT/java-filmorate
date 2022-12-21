@@ -43,6 +43,11 @@ public class UserService {
         return userStorage.getUser(userId);
     }
 
+    public User deleteById(int id) {
+        log.info("Пользователь с id {} удален", id);
+        return userStorage.getUser(id);
+    }
+
     public List<User> getAllUsers() {
         log.info("Вывод всех пользователей.");
         return userStorage.getAllUsers();

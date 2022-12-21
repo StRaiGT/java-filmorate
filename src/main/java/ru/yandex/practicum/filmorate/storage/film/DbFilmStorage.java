@@ -102,6 +102,20 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Film deleteById(int id) {
+        Film film = getFilm(id);
+      //  final String genresSqlQuery = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
+       // String mpaSqlQuery = "DELETE FROM FILMS WHERE MPA_ID = ?";
+
+       // jdbcTemplate.update(genresSqlQuery, id);
+        //jdbcTemplate.update(mpaSqlQuery, id);
+        final String sqlQuery = "DELETE FROM films WHERE FILM_ID = ?";
+
+        jdbcTemplate.update(sqlQuery, id);
+        return film;
+    }
+
+    @Override
     public List<Film> getAllFilms() {
         final String sqlQuery = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
                 "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
