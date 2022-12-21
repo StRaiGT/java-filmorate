@@ -41,6 +41,10 @@ public class FilmService {
         return filmStorage.getFilm(filmId);
     }
 
+    public Film deleteById(int id) {
+        return  filmStorage.deleteById(id);
+    }
+
     public List<Film> getAllFilms() {
         log.info("Вывод всех фильмов.");
         return filmStorage.getAllFilms();
