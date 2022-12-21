@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,7 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -123,15 +123,19 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     private void addFilmGenres(Film film) {
-        if (film.getGenres() != null) {
-            final String sqlQuery = "INSERT INTO FILMS_GENRES " +
-                    "VALUES (?, ?)";
-            List<Object[]> batch = new ArrayList<>();
-            film.getGenres().stream()
-                    .map(Genre::getId)
-                    .distinct()
-                    .forEach(genreId -> batch.add(new Object[]{film.getId(), genreId}));
-            jdbcTemplate.batchUpdate(sqlQuery, batch);
+        try {
+            if (film.getGenres() != null) {
+                final String sqlQuery = "INSERT INTO FILMS_GENRES " +
+                        "VALUES (?, ?)";
+                List<Object[]> batch = new ArrayList<>();
+                film.getGenres().stream()
+                        .map(Genre::getId)
+                        .distinct()
+                        .forEach(genreId -> batch.add(new Object[]{film.getId(), genreId}));
+                jdbcTemplate.batchUpdate(sqlQuery, batch);
+            }
+        } catch (DataIntegrityViolationException exception) {
+            throw new NotFoundException("Фильма с таким id не существует.");
         }
     }
 
@@ -142,15 +146,19 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     private void addFilmDirectors(Film film) {
-        if (film.getDirectors() != null) {
-            final String sqlQuery = "INSERT INTO FILMS_DIRECTORS " +
-                    "VALUES (?, ?)";
-            List<Object[]> batch = new ArrayList<>();
-            film.getDirectors().stream()
-                    .map(Director::getId)
-                    .distinct()
-                    .forEach(directorId -> batch.add(new Object[]{film.getId(), directorId}));
-            jdbcTemplate.batchUpdate(sqlQuery, batch);
+        try {
+            if (film.getDirectors() != null) {
+                final String sqlQuery = "INSERT INTO FILMS_DIRECTORS " +
+                        "VALUES (?, ?)";
+                List<Object[]> batch = new ArrayList<>();
+                film.getDirectors().stream()
+                        .map(Director::getId)
+                        .distinct()
+                        .forEach(directorId -> batch.add(new Object[]{film.getId(), directorId}));
+                jdbcTemplate.batchUpdate(sqlQuery, batch);
+            }
+        } catch (DataIntegrityViolationException exception) {
+            throw new NotFoundException("Фильма с таким id не существует.");
         }
     }
 
@@ -197,7 +205,7 @@ public class DbFilmStorage implements FilmStorage {
                     "FROM LIKES AS l " +
                     "GROUP BY l.FILM_ID" +
                 ") AS r ON f.FILM_ID = r.FILM_ID " +
-                "ORDER BY r.rate DESC, f.FILM_ID " +
+                "ORDER BY r.rate DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::makeFilms, count);
     }
@@ -266,14 +274,12 @@ public class DbFilmStorage implements FilmStorage {
                 "GROUP BY l.FILM_ID" +
                 ") AS r ON f.FILM_ID = r.FILM_ID " +
                 "WHERE fd.DIRECTOR_ID = ? " +
-                "ORDER BY r.rate DESC, f.FILM_ID";
+                "ORDER BY r.rate DESC";
 
         return jdbcTemplate.query(sqlQuery, this::makeFilms, id);
     }
 
     public List<Film> getFilmsByDirectorSortYear(int id) {
-        //TODO
-
         dbDirectorStorage.getDirector(id);
 
         final String sqlQuery = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +

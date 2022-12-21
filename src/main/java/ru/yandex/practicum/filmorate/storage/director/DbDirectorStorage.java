@@ -43,11 +43,15 @@ public class DbDirectorStorage implements DirectorStorage {
     }
 
     public Director updateDirector(Director director) {
-        final String sqlQuery = "UPDATE DIRECTORS " +
-                "SET NAME = ? " +
-                "WHERE DIRECTOR_ID = ?";
-        jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
-        return getDirector(director.getId());
+        try {
+            final String sqlQuery = "UPDATE DIRECTORS " +
+                    "SET NAME = ? " +
+                    "WHERE DIRECTOR_ID = ?";
+            jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
+            return getDirector(director.getId());
+        } catch (DuplicateKeyException e) {
+            throw new AlreadyExistException("Режиссер с таким именем уже существует.");
+        }
     }
 
     public Boolean deleteDirector(int id) {
