@@ -11,6 +11,8 @@
 - `[GET] /films/popular?count={count}` – получить топ `count` самых популярных фильмов
 - `[PUT] /films/{id}/like/{userId}` – поставить лайк фильму `id` от пользователя `userId`
 - `[DELETE] /films/{id}/like/{userId}` – удалить лайк у фильма `id` от пользователя `userId`
+- `[GET] /films/director/{directorId}?sortBy=[year,likes]` - получить список фильмов режиссера отсортированных 
+по количеству лайков или году выпуска
 
 ### Users
 - `[GET] /users` – получить список всех пользователей
@@ -29,6 +31,13 @@
 ### Genres
 - `[GET] /genres` – получить список всех жанров
 - `[GET] /genres/{id}` – получить жанр `id`
+
+### Directors
+- `[GET] /directors` – получить список всех режиссеров
+- `[GET] /directors/{id}` – получить режиссера `id`
+- `[POST] /directors` – создать нового режиссера
+- `[PUT] /directors` – обновить режиссера
+- `[DELETE] /directors/{id}` – удалить режиссера `id`
 
 ## Схема базы данных
 ![](scheme.png)
