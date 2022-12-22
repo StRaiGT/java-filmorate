@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -24,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class DbFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
@@ -95,11 +98,14 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public Film deleteById(int id) {
         Film film = getFilm(id);
-      //  final String genresSqlQuery = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
-       // String mpaSqlQuery = "DELETE FROM FILMS WHERE MPA_ID = ?";
 
-       // jdbcTemplate.update(genresSqlQuery, id);
-        //jdbcTemplate.update(mpaSqlQuery, id);
+        String checkQuery = "SELECT * FROM films WHERE FILM_ID = ?";
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(checkQuery, id);
+        if (!filmRows.next()) {
+            log.warn("Фильм с идентификатором {} не найден.", id);
+            throw new NotFoundException("Фильм не найден");
+        }
+
         final String sqlQuery = "DELETE FROM films WHERE FILM_ID = ?";
 
         jdbcTemplate.update(sqlQuery, id);
@@ -206,3 +212,9 @@ public class DbFilmStorage implements FilmStorage {
         return new ArrayList<>(films.values());
     }
 }
+
+//  final String genresSqlQuery = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
+// String mpaSqlQuery = "DELETE FROM FILMS WHERE MPA_ID = ?";
+
+// jdbcTemplate.update(genresSqlQuery, id);
+//jdbcTemplate.update(mpaSqlQuery, id);
