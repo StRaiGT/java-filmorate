@@ -76,19 +76,10 @@ public class DbUserStorage implements UserStorage{
     }
 
     @Override
-    public boolean deleteById(int id) {
-
-        String checkQuery = "SELECT * FROM USERS WHERE USER_ID = ?";
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(checkQuery, id);
-        if (!filmRows.next()) {
-            log.warn("Пользователь с идентификатором {} не найден.", id);
-            throw new NotFoundException("Пользователь не найден");
-        }
-
-        final String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
-
-         jdbcTemplate.update(sqlQuery, id);
-
+    public Boolean deleteUser(int id) {
+        final String sqlQuery = "DELETE FROM USERS " +
+                "WHERE USER_ID = ?";
+        jdbcTemplate.update(sqlQuery, id);
         return true;
     }
 
@@ -165,8 +156,3 @@ public class DbUserStorage implements UserStorage{
                 .build();
     }
 }
-
-/*
-        try {       } catch (Exception e) {
-            System.out.println(e);
-        } */

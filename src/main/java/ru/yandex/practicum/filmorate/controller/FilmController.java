@@ -33,8 +33,8 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}")
-    public boolean deleteById(@PathVariable int id) {
-        return filmService.deleteById(id);
+    public Boolean deleteFilm(@PathVariable int id) {
+        return filmService.deleteFilm(id);
     }
 
     @GetMapping("/popular")

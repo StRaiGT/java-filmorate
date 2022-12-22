@@ -781,7 +781,6 @@ public class FilmControllerTest {
                 .build();
         userStorage.createUser(user3);
 
-        filmController.addLike(1, 1);
         filmController.addLike(2, 1);
         filmController.addLike(2, 2);
         filmController.addLike(3, 1);
@@ -1270,5 +1269,116 @@ public class FilmControllerTest {
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.getFilmsByDirector(1, "unknown"));
         assertEquals("Некорректные параметры сортировки в запросе.", exception.getMessage());
+    }
+
+    @Test
+    public void shouldDeleteFilm() {
+        Film film1 = Film.builder()
+                .id(1)
+                .name("test film name 1")
+                .description("description")
+                .duration(100)
+                .releaseDate(LocalDate.of(1967, 3, 25))
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+        film1.getGenres().add(Genre.builder()
+                .id(1)
+                .build());
+        directorStorage.createDirector(Director.builder()
+                .id(1)
+                .name("director 1")
+                .build());
+        film1.getDirectors().add(directorStorage.getDirector(1));
+        filmController.createFilm(film1);
+
+        Film film2 = Film.builder()
+                .id(2)
+                .name("test film name 2")
+                .description("description")
+                .duration(100)
+                .releaseDate(LocalDate.of(1955, 3, 25))
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+        film2.getGenres().add(Genre.builder()
+                .id(2)
+                .build());
+        directorStorage.createDirector(Director.builder()
+                .id(2)
+                .name("director 2")
+                .build());
+        film2.getDirectors().add(directorStorage.getDirector(2));
+        filmController.createFilm(film2);
+
+        Film film3 = Film.builder()
+                .id(3)
+                .name("test film name 3")
+                .description("description")
+                .duration(100)
+                .releaseDate(LocalDate.of(1950, 3, 25))
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+        film3.getGenres().add(Genre.builder()
+                .id(3)
+                .build());
+        film3.getDirectors().add(directorStorage.getDirector(2));
+        filmController.createFilm(film3);
+
+        List<Film> arr = filmController.getAllFilms();
+
+        assertEquals(arr.size(), 3);
+        assertEquals(arr.get(0).getId(), film1.getId());
+        assertEquals(arr.get(1).getId(), film2.getId());
+        assertEquals(arr.get(2).getId(), film3.getId());
+
+        filmController.deleteFilm(2);
+
+        arr = filmController.getAllFilms();
+
+        assertEquals(arr.size(), 2);
+
+        Film filmFromController1 = arr.get(0);
+        Film filmFromController2 = arr.get(1);
+
+        assertEquals(filmFromController1.getId(), film1.getId());
+        assertEquals(filmFromController1.getName(), film1.getName());
+        assertEquals(filmFromController1.getDescription(), film1.getDescription());
+        assertEquals(filmFromController1.getDuration(), film1.getDuration());
+        assertEquals(filmFromController1.getReleaseDate(), film1.getReleaseDate());
+        assertEquals(filmFromController1.getMpa().getId(), film1.getMpa().getId());
+        assertEquals(filmFromController1.getGenres().size(), film1.getGenres().size());
+        assertEquals(new ArrayList<>(filmFromController1.getGenres()).get(0).getId(),
+                new ArrayList<>(film1.getGenres()).get(0).getId());
+        assertEquals(filmFromController1.getDirectors().size(), film1.getDirectors().size());
+        assertEquals(new ArrayList<>(filmFromController1.getDirectors()).get(0).getId(),
+                new ArrayList<>(film1.getDirectors()).get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController1.getDirectors()).get(0).getName(),
+                new ArrayList<>(film1.getDirectors()).get(0).getName());
+
+        assertEquals(filmFromController2.getId(), film3.getId());
+        assertEquals(filmFromController2.getName(), film3.getName());
+        assertEquals(filmFromController2.getDescription(), film3.getDescription());
+        assertEquals(filmFromController2.getDuration(), film3.getDuration());
+        assertEquals(filmFromController2.getReleaseDate(), film3.getReleaseDate());
+        assertEquals(filmFromController2.getMpa().getId(), film3.getMpa().getId());
+        assertEquals(filmFromController2.getGenres().size(), film3.getGenres().size());
+        assertEquals(new ArrayList<>(filmFromController2.getGenres()).get(0).getId(),
+                new ArrayList<>(film3.getGenres()).get(0).getId());
+        assertEquals(filmFromController2.getDirectors().size(), film3.getDirectors().size());
+        assertEquals(new ArrayList<>(filmFromController2.getDirectors()).get(0).getId(),
+                new ArrayList<>(film3.getDirectors()).get(0).getId());
+        assertEquals(new ArrayList<>(filmFromController2.getDirectors()).get(0).getName(),
+                new ArrayList<>(film3.getDirectors()).get(0).getName());
+    }
+
+    @Test
+    public void shouldDeleteFilmNotFound() {
+        List<Film> arr = filmController.getAllFilms();
+
+        assertEquals(arr.size(), 0);
+
+        filmController.deleteFilm(999);
+        arr = filmController.getAllFilms();
+
+        assertEquals(arr.size(), 0);
     }
 }

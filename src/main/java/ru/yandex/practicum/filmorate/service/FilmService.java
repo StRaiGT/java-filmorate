@@ -41,8 +41,9 @@ public class FilmService {
         return filmStorage.getFilm(filmId);
     }
 
-    public boolean deleteById(int id) {
-        return  filmStorage.deleteById(id);
+    public Boolean deleteFilm(int id) {
+        log.info("Удаление фильма с id {}", id);
+        return  filmStorage.deleteFilm(id);
     }
 
     public List<Film> getAllFilms() {

@@ -102,17 +102,11 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film deleteById(int id) {
-        Film film = getFilm(id);
-      //  final String genresSqlQuery = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
-       // String mpaSqlQuery = "DELETE FROM FILMS WHERE MPA_ID = ?";
-
-       // jdbcTemplate.update(genresSqlQuery, id);
-        //jdbcTemplate.update(mpaSqlQuery, id);
-        final String sqlQuery = "DELETE FROM films WHERE FILM_ID = ?";
-
+    public Boolean deleteFilm(int id) {
+        final String sqlQuery = "DELETE FROM FILMS " +
+                "WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery, id);
-        return film;
+        return true;
     }
 
     @Override
@@ -216,9 +210,15 @@ public class DbFilmStorage implements FilmStorage {
                     "FROM LIKES AS l " +
                     "GROUP BY l.FILM_ID" +
                 ") AS r ON f.FILM_ID = r.FILM_ID " +
-                "ORDER BY r.rate DESC " +
-                "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::makeFilms, count);
+                "ORDER BY r.rate DESC";
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilms);
+
+        List<Film> result = new ArrayList<>();
+        films.stream()
+                .limit(count)
+                .forEach(result::add);
+
+        return result;
     }
 
     private List<Film> makeFilms(ResultSet resultSet) throws SQLException {
