@@ -98,7 +98,6 @@ public class DbUserStorage implements UserStorage{
 
          jdbcTemplate.update(sqlQuery, id);
 
-     //   User user = getUser(id);
         return true;
     }
 

@@ -96,20 +96,20 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film deleteById(int id) {
+    public boolean deleteById(int id) {
         Film film = getFilm(id);
 
-        String checkQuery = "SELECT * FROM films WHERE FILM_ID = ?";
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(checkQuery, id);
-        if (!filmRows.next()) {
-            log.warn("Фильм с идентификатором {} не найден.", id);
-            throw new NotFoundException("Фильм не найден");
-        }
+   //     String checkQuery = "SELECT * FROM films WHERE FILM_ID = ?";
+//        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(checkQuery, id);
+//        if (!filmRows.next()) {
+//            log.warn("Фильм с идентификатором {} не найден.", id);
+//            throw new NotFoundException("Фильм не найден");
+//        }
 
         final String sqlQuery = "DELETE FROM films WHERE FILM_ID = ?";
 
         jdbcTemplate.update(sqlQuery, id);
-        return film;
+        return true;
     }
 
     @Override
@@ -218,3 +218,9 @@ public class DbFilmStorage implements FilmStorage {
 
 // jdbcTemplate.update(genresSqlQuery, id);
 //jdbcTemplate.update(mpaSqlQuery, id);
+
+//        final String genresSqlQuery = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
+//    String mpaSqlQuery = "DELETE FROM FILMS WHERE MPA_ID = ?";
+//
+//    jdbcTemplate.update(genresSqlQuery, id);
+//    jdbcTemplate.update(mpaSqlQuery, id);
