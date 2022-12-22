@@ -168,6 +168,7 @@ public class DbFilmStorage implements FilmStorage {
         jdbcTemplate.update(sqlQuery, film.getId());
     }
 
+    @Override
     public Boolean addLike(int filmId, int userId) {
         getFilm(filmId);
         dbUserStorage.getUser(userId);
@@ -178,6 +179,7 @@ public class DbFilmStorage implements FilmStorage {
         return true;
     }
 
+    @Override
     public Boolean removeLike(int filmId, int userId) {
         getFilm(filmId);
         dbUserStorage.getUser(userId);
@@ -189,6 +191,7 @@ public class DbFilmStorage implements FilmStorage {
         return true;
     }
 
+    @Override
     public List<Film> getTopRatedFilms(int count) {
         final String sqlQuery = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
                 "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
@@ -255,6 +258,7 @@ public class DbFilmStorage implements FilmStorage {
         return orderResult;
     }
 
+    @Override
     public List<Film> getFilmsByDirectorSortLikes(int id) {
         dbDirectorStorage.getDirector(id);
 
@@ -279,6 +283,7 @@ public class DbFilmStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeFilms, id);
     }
 
+    @Override
     public List<Film> getFilmsByDirectorSortYear(int id) {
         dbDirectorStorage.getDirector(id);
 

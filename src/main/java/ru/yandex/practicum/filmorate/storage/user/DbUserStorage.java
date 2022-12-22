@@ -121,6 +121,7 @@ public class DbUserStorage implements UserStorage{
         return jdbcTemplate.query(sqlQuery, this::makeUser, userId);
     }
 
+    @Override
     public List<User> getUserCommonFriends(int userId, int friendId) {
         final String sqlQuery = "SELECT * " +
                 "FROM USERS " +

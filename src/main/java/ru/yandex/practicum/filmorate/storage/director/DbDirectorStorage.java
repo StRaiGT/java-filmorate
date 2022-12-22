@@ -22,6 +22,7 @@ import java.util.Objects;
 public class DbDirectorStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    @Override
     public Director createDirector(Director director) {
         try {
             final String sqlQuery = "INSERT INTO DIRECTORS (NAME) " +
@@ -42,6 +43,7 @@ public class DbDirectorStorage implements DirectorStorage {
         }
     }
 
+    @Override
     public Director updateDirector(Director director) {
         try {
             final String sqlQuery = "UPDATE DIRECTORS " +
@@ -54,6 +56,7 @@ public class DbDirectorStorage implements DirectorStorage {
         }
     }
 
+    @Override
     public Boolean deleteDirector(int id) {
         final String sqlQuery = "DELETE " +
                 "FROM DIRECTORS " +
@@ -62,6 +65,7 @@ public class DbDirectorStorage implements DirectorStorage {
         return true;
     }
 
+    @Override
     public Director getDirector(int id) {
         try {
             final String sqlQuery = "SELECT * " +
@@ -73,6 +77,7 @@ public class DbDirectorStorage implements DirectorStorage {
         }
     }
 
+    @Override
     public List<Director> getAllDirectors() {
         final String sqlQuery = "SELECT * " +
                 "FROM DIRECTORS";
