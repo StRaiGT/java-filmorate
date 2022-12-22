@@ -41,7 +41,7 @@ public class FilmService {
         return filmStorage.getFilm(filmId);
     }
 
-    public Film deleteById(int id) {
+    public boolean deleteById(int id) {
         return  filmStorage.deleteById(id);
     }
 
