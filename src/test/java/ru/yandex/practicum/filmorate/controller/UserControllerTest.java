@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.IllegalAddFriendException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -62,28 +61,6 @@ public class UserControllerTest {
         assertEquals(user2FromController.getName(), user2.getLogin());
         assertEquals(user2FromController.getLogin(), user2.getLogin());
         assertEquals(user2FromController.getBirthday(), user2.getBirthday());
-    }
-
-    @Test
-    public void shouldThrowExceptionIfAddUserLoginFound() {
-        User user = User.builder()
-                .email("tester1@yandex.ru")
-                .name("Test name 1")
-                .login("ValidTestLogin1")
-                .birthday(LocalDate.of(1964, 6, 11))
-                .build();
-        userController.createUser(user);
-
-        User newUser = User.builder()
-                .email("tester2@yandex.ru")
-                .name("Test name 2")
-                .login("ValidTestLogin1")
-                .birthday(LocalDate.of(1964, 6, 11))
-                .build();
-
-        AlreadyExistException exception = assertThrows(AlreadyExistException.class, () -> userController.createUser(newUser));
-        assertEquals("Пользователь с таким login уже существует.", exception.getMessage());
-        assertEquals(userController.getAllUsers().size(), 1);
     }
 
     @Test

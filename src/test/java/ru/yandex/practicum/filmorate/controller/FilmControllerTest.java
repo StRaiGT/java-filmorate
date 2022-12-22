@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -73,46 +72,6 @@ public class FilmControllerTest {
                 new ArrayList<>(film.getDirectors()).get(0).getId());
         assertEquals(new ArrayList<>(filmFromController.getDirectors()).get(0).getName(),
                 new ArrayList<>(film.getDirectors()).get(0).getName());
-    }
-
-    @Test
-    public void shouldThrowExceptionIfAddFilmNameFound() {
-        Film film = Film.builder()
-                .name("test film name")
-                .description("description")
-                .duration(100)
-                .releaseDate(LocalDate.of(1967, 3, 25))
-                .mpa(Mpa.builder().id(1).build())
-                .build();
-        film.getGenres().add(Genre.builder()
-                .id(1)
-                .build());
-        directorStorage.createDirector(Director.builder()
-                .id(1)
-                .name("director 1")
-                .build());
-        film.getDirectors().add(directorStorage.getDirector(1));
-        filmController.createFilm(film);
-
-        Film newFilm = Film.builder()
-                .name("test film name")
-                .description("description 2")
-                .duration(200)
-                .releaseDate(LocalDate.of(1987, 3, 25))
-                .mpa(Mpa.builder().id(2).build())
-                .build();
-        film.getGenres().add(Genre.builder()
-                .id(2)
-                .build());
-        directorStorage.createDirector(Director.builder()
-                .id(2)
-                .name("director 2")
-                .build());
-        film.getDirectors().add(directorStorage.getDirector(2));
-
-        AlreadyExistException exception = assertThrows(AlreadyExistException.class, () -> filmController.createFilm(newFilm));
-        assertEquals("Фильм с таким названием уже существует.", exception.getMessage());
-        assertEquals(filmController.getAllFilms().size(), 1);
     }
 
     @Test

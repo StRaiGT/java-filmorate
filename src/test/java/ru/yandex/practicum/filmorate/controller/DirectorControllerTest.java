@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 
@@ -73,29 +72,6 @@ public class DirectorControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfAddDirectorNameFound() {
-        Director director1 = Director.builder()
-                .id(1)
-                .name("director 1")
-                .build();
-        directorController.createDirector(director1);
-
-        Director director2 = Director.builder()
-                .id(2)
-                .name("director 1")
-                .build();
-
-        AlreadyExistException exception = assertThrows(AlreadyExistException.class, () -> directorController.createDirector(director2));
-        assertEquals("Режиссер с таким именем уже существует.", exception.getMessage());
-
-        List<Director> directorsFromController = directorController.getAllDirectors();
-
-        assertEquals(directorsFromController.size(), 1);
-        assertEquals(directorsFromController.get(0).getId(), director1.getId());
-        assertEquals(directorsFromController.get(0).getName(), director1.getName());
-    }
-
-    @Test
     public void shouldUpdateDirector() {
         Director director1 = Director.builder()
                 .id(1)
@@ -114,37 +90,6 @@ public class DirectorControllerTest {
         assertEquals(directorsFromController.size(), 1);
         assertEquals(directorsFromController.get(0).getId(), director2.getId());
         assertEquals(directorsFromController.get(0).getName(), director2.getName());
-    }
-
-    @Test
-    public void shouldThrowExceptionIfUpdateDirectorNameFound() {
-        Director director1 = Director.builder()
-                .id(1)
-                .name("director 1")
-                .build();
-        directorController.createDirector(director1);
-
-        Director director2 = Director.builder()
-                .id(2)
-                .name("director 2")
-                .build();
-        directorController.createDirector(director2);
-
-        Director director3 = Director.builder()
-                .id(1)
-                .name("director 2")
-                .build();
-
-        AlreadyExistException exception = assertThrows(AlreadyExistException.class, () -> directorController.updateDirector(director3));
-        assertEquals("Режиссер с таким именем уже существует.", exception.getMessage());
-
-        List<Director> directorsFromController = directorController.getAllDirectors();
-
-        assertEquals(directorsFromController.size(), 2);
-        assertEquals(directorsFromController.get(0).getId(), director1.getId());
-        assertEquals(directorsFromController.get(0).getName(), director1.getName());
-        assertEquals(directorsFromController.get(1).getId(), director2.getId());
-        assertEquals(directorsFromController.get(1).getName(), director2.getName());
     }
 
     @Test

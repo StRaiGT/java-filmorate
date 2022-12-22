@@ -1,13 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.director;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 
@@ -24,36 +22,28 @@ public class DbDirectorStorage implements DirectorStorage {
 
     @Override
     public Director createDirector(Director director) {
-        try {
-            final String sqlQuery = "INSERT INTO DIRECTORS (NAME) " +
-                        "VALUES (?)";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(
-                    connection -> {
-                        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, new String[]{"DIRECTOR_ID"});
-                        preparedStatement.setString(1, director.getName());
-                        return preparedStatement;
-                    },
-                    keyHolder
-            );
-            director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-            return director;
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistException("Режиссер с таким именем уже существует.");
-        }
+        final String sqlQuery = "INSERT INTO DIRECTORS (NAME) " +
+                    "VALUES (?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, new String[]{"DIRECTOR_ID"});
+                    preparedStatement.setString(1, director.getName());
+                    return preparedStatement;
+                },
+                keyHolder
+        );
+        director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        return director;
     }
 
     @Override
     public Director updateDirector(Director director) {
-        try {
-            final String sqlQuery = "UPDATE DIRECTORS " +
-                    "SET NAME = ? " +
-                    "WHERE DIRECTOR_ID = ?";
-            jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
-            return getDirector(director.getId());
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistException("Режиссер с таким именем уже существует.");
-        }
+        final String sqlQuery = "UPDATE DIRECTORS " +
+                "SET NAME = ? " +
+                "WHERE DIRECTOR_ID = ?";
+        jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
+        return getDirector(director.getId());
     }
 
     @Override

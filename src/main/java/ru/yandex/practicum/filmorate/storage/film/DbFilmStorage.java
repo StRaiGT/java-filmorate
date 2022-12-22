@@ -2,12 +2,10 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -35,26 +33,22 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) {
-        try {
-            final String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) " +
-                    "VALUES (?, ?, ?, ?, ?)";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(
-                    connection -> {
-                        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
-                        preparedStatement.setString(1, film.getName());
-                        preparedStatement.setString(2, film.getDescription());
-                        preparedStatement.setDate(3, Date.valueOf(film.getReleaseDate()));
-                        preparedStatement.setInt(4, film.getDuration());
-                        preparedStatement.setInt(5, film.getMpa().getId());
-                        return preparedStatement;
-                        },
-                    keyHolder
-            );
-            film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistException("Фильм с таким названием уже существует.");
-        }
+        final String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
+                    preparedStatement.setString(1, film.getName());
+                    preparedStatement.setString(2, film.getDescription());
+                    preparedStatement.setDate(3, Date.valueOf(film.getReleaseDate()));
+                    preparedStatement.setInt(4, film.getDuration());
+                    preparedStatement.setInt(5, film.getMpa().getId());
+                    return preparedStatement;
+                    },
+                keyHolder
+        );
+        film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
 
         addFilmGenres(film);
         addFilmDirectors(film);
