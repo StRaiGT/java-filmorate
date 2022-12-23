@@ -64,4 +64,9 @@ public class FilmService {
         log.info("Возвращаем топ {} фильмов.", count);
         return filmStorage.getTopRatedFilms(count);
     }
+
+    public List<Film> searchFilms(String query, String by) {
+        log.info("Начинаем поиск фильма {}", query);
+        return filmStorage.searchFilms(query, by);
+    }
 }

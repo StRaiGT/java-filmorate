@@ -61,4 +61,9 @@ public class FilmController {
     public Boolean removeLike(@PathVariable int id, @PathVariable int userId) {
         return filmService.removeLike(id, userId);
     }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query, @RequestParam(required = false) String by) {
+        return filmService.searchFilms(query, by);
+    }
 }

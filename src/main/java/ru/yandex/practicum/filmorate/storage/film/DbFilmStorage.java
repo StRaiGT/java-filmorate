@@ -55,6 +55,7 @@ public class DbFilmStorage implements FilmStorage {
             throw new AlreadyExistException("Фильм с таким названием уже существует.");
         }
         addFilmGenres(film);
+
         return getFilm(film.getId());
     }
 
@@ -74,6 +75,7 @@ public class DbFilmStorage implements FilmStorage {
         );
         removeFilmGenres(film);
         addFilmGenres(film);
+
         return getFilm(film.getId());
     }
 
@@ -92,13 +94,14 @@ public class DbFilmStorage implements FilmStorage {
         if (films.size() == 0) {
             throw new NotFoundException("Фильма с таким id не существует.");
         }
+
         return films.get(0);
     }
 
     @Override
     public boolean deleteById(int id) {
         Film film = getFilm(id);
-
+        System.out.println(film);
    //     String checkQuery = "SELECT * FROM films WHERE FILM_ID = ?";
 //        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(checkQuery, id);
 //        if (!filmRows.next()) {
@@ -109,6 +112,9 @@ public class DbFilmStorage implements FilmStorage {
         final String sqlQuery = "DELETE FROM films WHERE FILM_ID = ?";
 
         jdbcTemplate.update(sqlQuery, id);
+
+        log.info("deleteById");
+
         return true;
     }
 
@@ -121,6 +127,7 @@ public class DbFilmStorage implements FilmStorage {
                 "JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
                 "LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
                 "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID";
+
         return jdbcTemplate.query(sqlQuery, this::makeFilms);
     }
 
@@ -179,6 +186,7 @@ public class DbFilmStorage implements FilmStorage {
                 ") AS r ON f.FILM_ID = r.FILM_ID " +
                 "ORDER BY r.rate DESC " +
                 "LIMIT ?";
+
         return jdbcTemplate.query(sqlQuery, this::makeFilms, count);
     }
 
@@ -211,16 +219,32 @@ public class DbFilmStorage implements FilmStorage {
         }
         return new ArrayList<>(films.values());
     }
+
+    @Override
+    public List<Film> searchFilms(String query, String by) {
+
+        final String sqlByDirector = "";
+        final String sqlByFilm = "";
+        final String sqlByFilmOrDirector = "";
+        final String sqlByNoArq = "";
+
+        List<Film> films;
+
+        query = "%" + query.toLowerCase() + "%";
+
+        String[] byList = by.split(",");
+        if (byList.length != 0) {
+            if (byList.length == 1) {
+                if (byList[0].equals("director")) {
+                    return jdbcTemplate.query(sqlByDirector, this::makeFilms, query);
+                } else {
+                    return jdbcTemplate.query(sqlByFilm, this::makeFilms, query);
+                }
+            } else {
+                return jdbcTemplate.query(sqlByFilmOrDirector, this::makeFilms, query, query);
+            }
+        } else {
+            return jdbcTemplate.query(sqlByNoArq, this::makeFilms);
+        }
+    }
 }
-
-//  final String genresSqlQuery = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
-// String mpaSqlQuery = "DELETE FROM FILMS WHERE MPA_ID = ?";
-
-// jdbcTemplate.update(genresSqlQuery, id);
-//jdbcTemplate.update(mpaSqlQuery, id);
-
-//        final String genresSqlQuery = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
-//    String mpaSqlQuery = "DELETE FROM FILMS WHERE MPA_ID = ?";
-//
-//    jdbcTemplate.update(genresSqlQuery, id);
-//    jdbcTemplate.update(mpaSqlQuery, id);

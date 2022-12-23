@@ -13,4 +13,5 @@ public interface FilmStorage {
     Boolean addLike(int filmId, int userId);
     Boolean removeLike(int filmId, int userId);
     List<Film> getTopRatedFilms(int count);
+    List<Film> searchFilms(String query, String by);
 }
