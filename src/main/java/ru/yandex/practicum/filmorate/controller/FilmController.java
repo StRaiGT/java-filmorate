@@ -32,6 +32,11 @@ public class FilmController {
         return filmService.getFilmById(id);
     }
 
+    @DeleteMapping("/{id}")
+    public Boolean deleteFilm(@PathVariable int id) {
+        return filmService.deleteFilm(id);
+    }
+
     @GetMapping("/popular")
     public List<Film> getTopRatedFilms(@RequestParam(defaultValue = "10", required = false) int count) {
         return filmService.getTopRatedFilms(count);

@@ -7,6 +7,7 @@
 - `[GET] /films/{id}` – получить фильм `id`
 - `[POST] /films` – создать новый фильм
 - `[PUT] /films` – обновить фильм
+- `[DELETE] /films/{id}` - удалить фильм `id`
 - `[GET] /films/popular` – получить топ 10 самых популярных фильмов
 - `[GET] /films/popular?count={count}` – получить топ `count` самых популярных фильмов
 - `[PUT] /films/{id}/like/{userId}` – поставить лайк фильму `id` от пользователя `userId`
@@ -19,6 +20,7 @@
 - `[GET] /users/{id}` – получить пользователя `id`
 - `[POST] /users` – создать нового пользователя
 - `[PUT] /users` – обновить пользователя
+- `[DELETE] /users/{id}` - удалить пользователя `id`
 - `[PUT] /users/{id}/friends/{friendId}` – добавить пользователю `id` в друзья пользователя `friendId`
 - `[DELETE] /users/{id}/friends/{friendId}` – удалить у пользователя `id` из друзей пользователя `friendId`
 - `[GET] /users/{id}/friends` – получить список всех друзей пользователя `id`

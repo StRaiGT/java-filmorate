@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class DbUserStorage implements UserStorage{
     private final JdbcTemplate jdbcTemplate;
@@ -73,6 +76,14 @@ public class DbUserStorage implements UserStorage{
     }
 
     @Override
+    public Boolean deleteUser(int id) {
+        final String sqlQuery = "DELETE FROM USERS " +
+                "WHERE USER_ID = ?";
+        jdbcTemplate.update(sqlQuery, id);
+        return true;
+    }
+
+    @Override
     public List<User> getAllUsers() {
         final String sqlQuery = "SELECT * " +
                 "FROM USERS";
@@ -102,6 +113,14 @@ public class DbUserStorage implements UserStorage{
 
     @Override
     public List<User> getUserFriends(int userId) {
+
+        String checkQuery = "SELECT * FROM USERS WHERE USER_ID = ?";
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(checkQuery, userId);
+        if (!filmRows.next()) {
+            log.warn("Пользователь с идентификатором {} не найден.", userId);
+            throw new NotFoundException("Пользователь не найден");
+        }
+
         final String sqlQuery = "SELECT * " +
                 "FROM USERS " +
                 "WHERE USER_ID IN (" +
