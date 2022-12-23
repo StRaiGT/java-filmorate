@@ -310,4 +310,27 @@ public class DbFilmStorage implements FilmStorage {
 
         return jdbcTemplate.query(sqlQuery, this::makeFilms, id);
     }
+
+    public List<Film> receiveFilmRecommendations(int userID) {
+        String sqlQuery = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
+                "       m.MPA_ID, m.NAME, m.DESCRIPTION, " +
+                "       g.GENRE_ID, g.NAME, " +
+                "       d.DIRECTOR_ID, d.NAME " +
+                "FROM FILMS AS f " +
+                "         JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
+                "         LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
+                "         LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
+                "         LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
+                "         LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                "WHERE f.film_id in (select LIKES.FILM_ID from LIKES " +
+                "                    where LIKES.USER_ID = ( " +
+                "                        select  LIKES.USER_ID from LIKES where " +
+                "                                LIKES.FILM_ID in (select LIKES.FILM_ID from LIKES where LIKES.USER_ID = ?) " +
+                "                                                           and LIKES.USER_ID != ? " +
+                "                        group by LIKES.USER_ID " +
+                "                        order by count(LIKES.FILM_ID) desc " +
+                "                        limit 1) " +
+                "                      and LIKES.FILM_ID not in (select LIKES.FILM_ID from LIKES where LIKES.USER_ID = ?)) ";
+        return jdbcTemplate.query(sqlQuery, this::makeFilms, userID, userID, userID);
+    }
 }
