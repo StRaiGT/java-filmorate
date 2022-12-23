@@ -102,12 +102,6 @@ public class DbFilmStorage implements FilmStorage {
     public boolean deleteById(int id) {
         Film film = getFilm(id);
         System.out.println(film);
-   //     String checkQuery = "SELECT * FROM films WHERE FILM_ID = ?";
-//        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(checkQuery, id);
-//        if (!filmRows.next()) {
-//            log.warn("Фильм с идентификатором {} не найден.", id);
-//            throw new NotFoundException("Фильм не найден");
-//        }
 
         final String sqlQuery = "DELETE FROM films WHERE FILM_ID = ?";
 
@@ -224,7 +218,14 @@ public class DbFilmStorage implements FilmStorage {
     public List<Film> searchFilms(String query, String by) {
 
         final String sqlByDirector = "";
-        final String sqlByFilm = "";
+        final String sqlByFilm = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
+                "       m.MPA_ID, m.NAME, m.DESCRIPTION, " +
+                "       g.GENRE_ID, g.NAME " +
+                "FROM FILMS AS f " +
+                "         JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
+                "         LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
+                "         LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
+                "where f.NAME like '%?%'";
         final String sqlByFilmOrDirector = "";
         final String sqlByNoArq = "";
 
