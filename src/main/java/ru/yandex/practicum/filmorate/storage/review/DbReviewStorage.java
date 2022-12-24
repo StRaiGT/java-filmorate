@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.review;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 
@@ -25,7 +23,6 @@ public class DbReviewStorage implements ReviewStorage {
 
     @Override
     public Optional<Review> createReview(Review review) {
-        try {
             final String sqlQuery = "INSERT INTO REVIEWS (CONTENT, IS_POSITIVE, USER_ID, FILM_ID) " +
                     "VALUES (?, ?, ?, ?);";
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -42,10 +39,7 @@ public class DbReviewStorage implements ReviewStorage {
             );
             review.setReviewId(Objects.requireNonNull(keyHolder.getKey()).intValue());
             return Optional.of(review);
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistException("duplicate");
         }
-    }
 
     @Override
     public Optional<Review> getReviewById(int id) {
