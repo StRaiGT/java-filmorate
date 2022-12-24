@@ -78,4 +78,9 @@ public class FilmService {
         }
         return films;
     }
+    public List<Film> searchFilms (String query, String by) {
+        log.info("Возвращаем результат поиска фильмов" +
+                " по запросу {} или по названию фильма или имени режиссёра {}.", query, by);
+        return filmStorage.searchFilms(query, by);
+    }
 }
