@@ -41,6 +41,11 @@ public class FilmService {
         return filmStorage.getFilm(filmId);
     }
 
+    public Boolean deleteFilm(int id) {
+        log.info("Удаление фильма с id {}", id);
+        return  filmStorage.deleteFilm(id);
+    }
+
     public List<Film> getAllFilms() {
         log.info("Вывод всех фильмов.");
         return filmStorage.getAllFilms();
@@ -59,5 +64,18 @@ public class FilmService {
     public List<Film> getTopRatedFilms(int count) {
         log.info("Возвращаем топ {} фильмов.", count);
         return filmStorage.getTopRatedFilms(count);
+    }
+
+    public List<Film> getFilmsByDirector(int directorId, String sortBy) {
+        log.info("Возвращаем фильмы режиссера с id {}.", directorId);
+        List<Film> films;
+        if (sortBy.equals("likes")) {
+            films = filmStorage.getFilmsByDirectorSortLikes(directorId);
+        } else if (sortBy.equals("year")) {
+            films = filmStorage.getFilmsByDirectorSortYear(directorId);
+        } else {
+            throw new ValidationException(String.format("Некорректные параметры сортировки в запросе."));
+        }
+        return films;
     }
 }

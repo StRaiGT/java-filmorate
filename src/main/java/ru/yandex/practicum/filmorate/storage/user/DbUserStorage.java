@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -20,53 +20,47 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class DbUserStorage implements UserStorage{
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public User createUser(User user) {
-        try {
-            final String sqlQuery = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) " +
-                    "VALUES (?, ?, ?, ?);";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(
-                    connection -> {
-                        PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
-                        ps.setString(1, user.getEmail());
-                        ps.setString(2, user.getLogin());
-                        ps.setString(3, user.getName());
-                        ps.setDate(4, Date.valueOf(user.getBirthday()));
-                        return ps;
-                        },
-                    keyHolder
-            );
-            user.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-            return user;
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistException("Пользователь с таким login уже существует.");
-        }
+        final String sqlQuery = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) " +
+                "VALUES (?, ?, ?, ?);";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
+                    ps.setString(1, user.getEmail());
+                    ps.setString(2, user.getLogin());
+                    ps.setString(3, user.getName());
+                    ps.setDate(4, Date.valueOf(user.getBirthday()));
+                    return ps;
+                    },
+                keyHolder
+        );
+        user.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        return user;
     }
 
     @Override
     public User updateUser(User user) {
         getUser(user.getId());
-        try {
-            final String sqlQuery = "UPDATE USERS " +
-                    "SET EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? " +
-                    "WHERE USER_ID = ?";
-            jdbcTemplate.update(
-                    sqlQuery,
-                    user.getEmail(),
-                    user.getLogin(),
-                    user.getName(),
-                    user.getBirthday(),
-                    user.getId()
-            );
-            return user;
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistException("Пользователь с таким login уже существует.");
-        }
+
+        final String sqlQuery = "UPDATE USERS " +
+                "SET EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? " +
+                "WHERE USER_ID = ?";
+        jdbcTemplate.update(
+                sqlQuery,
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                user.getBirthday(),
+                user.getId()
+        );
+        return user;
     }
 
     @Override
@@ -79,6 +73,14 @@ public class DbUserStorage implements UserStorage{
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователя с таким id не существует.");
         }
+    }
+
+    @Override
+    public Boolean deleteUser(int id) {
+        final String sqlQuery = "DELETE FROM USERS " +
+                "WHERE USER_ID = ?";
+        jdbcTemplate.update(sqlQuery, id);
+        return true;
     }
 
     @Override
@@ -111,6 +113,14 @@ public class DbUserStorage implements UserStorage{
 
     @Override
     public List<User> getUserFriends(int userId) {
+
+        String checkQuery = "SELECT * FROM USERS WHERE USER_ID = ?";
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(checkQuery, userId);
+        if (!filmRows.next()) {
+            log.warn("Пользователь с идентификатором {} не найден.", userId);
+            throw new NotFoundException("Пользователь не найден");
+        }
+
         final String sqlQuery = "SELECT * " +
                 "FROM USERS " +
                 "WHERE USER_ID IN (" +
@@ -121,6 +131,7 @@ public class DbUserStorage implements UserStorage{
         return jdbcTemplate.query(sqlQuery, this::makeUser, userId);
     }
 
+    @Override
     public List<User> getUserCommonFriends(int userId, int friendId) {
         final String sqlQuery = "SELECT * " +
                 "FROM USERS " +
