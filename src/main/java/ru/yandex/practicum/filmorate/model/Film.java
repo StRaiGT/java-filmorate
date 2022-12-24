@@ -9,8 +9,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Getter
 @Setter
@@ -31,5 +31,6 @@ public class Film {
     private int duration;
 
     private final Mpa mpa;
-    private final List<Genre> genres = new ArrayList<>();
+    private final Set<Genre> genres = new TreeSet<>();
+    private final Set<Director> directors = new TreeSet<>();
 }

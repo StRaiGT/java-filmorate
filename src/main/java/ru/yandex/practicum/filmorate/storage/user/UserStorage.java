@@ -8,7 +8,7 @@ public interface UserStorage {
     User createUser(User user);
     User updateUser(User user);
     User getUser(int userId);
-    boolean deleteById(int id);
+    Boolean deleteUser(int id);
     List<User> getAllUsers();
     Boolean addFriend(int userId, int friendId);
     Boolean removeFriend(int userId, int friendId);

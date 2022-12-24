@@ -43,9 +43,9 @@ public class UserService {
         return userStorage.getUser(userId);
     }
 
-    public boolean deleteById(int id) {
-        log.info("Пользователь с id {} удален", id);
-        return userStorage.deleteById(id);
+    public Boolean deleteUser(int id) {
+        log.info("Удаление пользователя с id {}", id);
+        return userStorage.deleteUser(id);
     }
 
     public List<User> getAllUsers() {

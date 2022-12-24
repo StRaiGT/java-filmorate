@@ -33,8 +33,8 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}")
-    public boolean deleteById(@PathVariable int id) {
-        return filmService.deleteById(id);
+    public Boolean deleteFilm(@PathVariable int id) {
+        return filmService.deleteFilm(id);
     }
 
     @GetMapping("/popular")
@@ -62,8 +62,9 @@ public class FilmController {
         return filmService.removeLike(id, userId);
     }
 
-    @GetMapping("/search")
-    public List<Film> searchFilms(@RequestParam String query, @RequestParam(required = false) String by) {
-        return filmService.searchFilms(query, by);
+    @GetMapping("director/{directorId}")
+    public List<Film> getFilmsByDirector(@PathVariable int directorId,
+                                         @RequestParam(required = false, defaultValue = "likes") String sortBy) {
+        return filmService.getFilmsByDirector(directorId, sortBy);
     }
 }
