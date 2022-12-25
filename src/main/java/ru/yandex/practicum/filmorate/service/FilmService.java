@@ -90,7 +90,7 @@ public class FilmService {
         if (byList.length != 0) {
             if (byList.length == 1) {
                 if (byList[0].equals("director")) {
-                    return filmStorage.searchFilmsByDirector(query);
+                    return filmStorage.searchFilmsByDiretor(query);
                 } else if (byList[0].equals("title")) {
                     return filmStorage.searchFilmsByTitle(query);
                 }
