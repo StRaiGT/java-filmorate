@@ -10,11 +10,16 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import java.time.LocalDate;
 import java.util.List;
 
+import static ru.yandex.practicum.filmorate.storage.feed.EventType.LIKE;
+import static ru.yandex.practicum.filmorate.storage.feed.Operation.ADD;
+import static ru.yandex.practicum.filmorate.storage.feed.Operation.REMOVE;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final FeedService feedService;
 
     public static final LocalDate FIRST_FILM_RELEASE_DATE = LocalDate.of(1895, 12, 28);
 
@@ -48,11 +53,13 @@ public class FilmService {
 
     public Boolean addLike(int filmId, int userId) {
         log.info("Добавляем лайк пользователя с id {} фильму с id {}.", userId, filmId);
+        feedService.add(filmId, userId, LIKE, ADD);
         return filmStorage.addLike(filmId, userId);
     }
 
     public Boolean removeLike(int filmId, int userId) {
         log.info("Удаляем лайк пользователя с id {} фильму с id {}.", userId, filmId);
+        feedService.add(filmId, userId, LIKE, REMOVE);
         return filmStorage.removeLike(filmId, userId);
     }
 
