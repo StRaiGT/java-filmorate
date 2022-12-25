@@ -15,5 +15,7 @@ public interface FilmStorage {
     List<Film> getTopRatedFilms(int count);
     List<Film> getFilmsByDirectorSortLikes(int directorId);
     List<Film> getFilmsByDirectorSortYear(int directorId);
-    List<Film> receiveFilmRecommendations(int userID);
+    List<Film> searchFilmsByDiretor(String query);
+    List<Film> searchFilmsByTitle(String query);
+    List<Film> searchFilmsByDirectorOrFilm(String filmName, String directorName);
 }

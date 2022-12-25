@@ -43,7 +43,7 @@ public class FilmService {
 
     public Boolean deleteFilm(int id) {
         log.info("Удаление фильма с id {}", id);
-        return  filmStorage.deleteFilm(id);
+        return filmStorage.deleteFilm(id);
     }
 
     public List<Film> getAllFilms() {
@@ -78,9 +78,28 @@ public class FilmService {
         }
         return films;
     }
-    public List<Film> searchFilms (String query, String by) {
+
+    public List<Film> searchFilms(String query, String by) {
         log.info("Возвращаем результат поиска фильмов" +
                 " по запросу {} или по названию фильма или имени режиссёра {}.", query, by);
-        return filmStorage.searchFilms(query, by);
+
+        query = "%" + query.toLowerCase() + "%";
+
+        String[] byList = by.split(",");
+
+        if (byList.length != 0) {
+            if (byList.length == 1) {
+                if (byList[0].equals("director")) {
+                    return filmStorage.searchFilmsByDiretor(query);
+                } else if (byList[0].equals("title")) {
+                    return filmStorage.searchFilmsByTitle(query);
+                }
+            } else if ((byList[0].equals("director") && byList[1].equals("title")) ||
+                    (byList[0].equals("title") && byList[1].equals("director")) &&
+                            byList.length == 2) {
+                return filmStorage.searchFilmsByDirectorOrFilm(query, query);
+            }
+        }
+        throw new ValidationException("Некорректные параметры запроса!");
     }
 }
