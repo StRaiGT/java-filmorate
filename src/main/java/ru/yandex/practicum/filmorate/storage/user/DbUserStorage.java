@@ -35,7 +35,7 @@ public class DbUserStorage implements UserStorage{
                     ps.setString(3, user.getName());
                     ps.setDate(4, Date.valueOf(user.getBirthday()));
                     return ps;
-                    },
+                },
                 keyHolder
         );
         user.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
@@ -64,19 +64,20 @@ public class DbUserStorage implements UserStorage{
     public User getUser(int userId) {
         try {
             final String sqlQuery = "SELECT * " +
-                "FROM USERS " +
-                "WHERE USER_ID = ?";
+                    "FROM USERS " +
+                    "WHERE USER_ID = ?";
             return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, userId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователя с таким id не существует.");
         }
     }
-
     @Override
     public Boolean deleteUser(int id) {
-        return null;
+        final String sqlQuery = "DELETE FROM USERS " +
+                "WHERE USER_ID = ?";
+        jdbcTemplate.update(sqlQuery, id);
+        return true;
     }
-
     @Override
     public List<User> getAllUsers() {
         final String sqlQuery = "SELECT * " +
@@ -110,9 +111,9 @@ public class DbUserStorage implements UserStorage{
         final String sqlQuery = "SELECT * " +
                 "FROM USERS " +
                 "WHERE USER_ID IN (" +
-                    "SELECT FRIEND_ID " +
-                    "FROM FRIENDSHIP " +
-                    "WHERE USER_ID = ?" +
+                "SELECT FRIEND_ID " +
+                "FROM FRIENDSHIP " +
+                "WHERE USER_ID = ?" +
                 ")";
         return jdbcTemplate.query(sqlQuery, this::makeUser, userId);
     }
@@ -122,13 +123,13 @@ public class DbUserStorage implements UserStorage{
         final String sqlQuery = "SELECT * " +
                 "FROM USERS " +
                 "where USER_ID IN (" +
-                    "SELECT FRIEND_ID " +
-                    "FROM FRIENDSHIP " +
-                    "where USER_ID = ?) " +
+                "SELECT FRIEND_ID " +
+                "FROM FRIENDSHIP " +
+                "where USER_ID = ?) " +
                 "AND USER_ID IN (" +
-                    "SELECT FRIEND_ID " +
-                    "FROM FRIENDSHIP " +
-                    "where USER_ID = ?)";
+                "SELECT FRIEND_ID " +
+                "FROM FRIENDSHIP " +
+                "where USER_ID = ?)";
         return jdbcTemplate.query(sqlQuery, this::makeUser, userId, friendId);
     }
 
@@ -141,6 +142,7 @@ public class DbUserStorage implements UserStorage{
                 .birthday(resultSet.getDate("BIRTHDAY").toLocalDate())
                 .build();
     }
+
     @Override
     public Boolean checkUserExist(Integer id) {
         String sql = "SELECT exists (SELECT * FROM USERS WHERE USER_ID = ?)";
