@@ -87,9 +87,9 @@ CREATE TABLE IF NOT EXISTS REVIEWS
     USER_ID     INTEGER,
     FILM_ID     INTEGER,
     constraint REVIEWS_FILMS_FILM_ID_FK
-        foreign key (FILM_ID) references FILMS,
+        foreign key (FILM_ID) references FILMS ON DELETE CASCADE,
     constraint REVIEWS_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
+        foreign key (USER_ID) references USERS ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS DISLIKE_REVIEWS
@@ -97,9 +97,9 @@ CREATE TABLE IF NOT EXISTS DISLIKE_REVIEWS
     REVIEW_ID INTEGER,
     USER_ID   INTEGER,
     constraint DISLIKE_REVIEWS_REVIEWS_ID_FK
-        foreign key (REVIEW_ID) references REVIEWS,
+        foreign key (REVIEW_ID) references REVIEWS ON DELETE CASCADE,
     constraint DISLIKE_REVIEWS_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
+        foreign key (USER_ID) references USERS ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS LIKES_REVIEWS
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS LIKES_REVIEWS
     REVIEW_ID INTEGER,
     USER_ID   INTEGER,
     constraint LIKES_REVIEWS_REVIEWS_ID_FK
-        foreign key (REVIEW_ID) references REVIEWS,
+        foreign key (REVIEW_ID) references REVIEWS ON DELETE CASCADE,
     constraint LIKES_REVIEWS_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
+        foreign key (USER_ID) references USERS ON DELETE CASCADE
 );
