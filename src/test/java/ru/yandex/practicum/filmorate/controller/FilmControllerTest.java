@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
@@ -33,6 +34,7 @@ public class FilmControllerTest {
     private final FilmController filmController;
     private final UserStorage userStorage;
     private final DirectorStorage directorStorage;
+    private final FilmStorage filmStorage;
 
     @Test
     public void shouldAddFilmWithValidFields() {
@@ -1380,5 +1382,61 @@ public class FilmControllerTest {
         arr = filmController.getAllFilms();
 
         assertEquals(arr.size(), 0);
+    }
+
+    @Test
+    public void shouldTestFilm() {
+        Film film0 = Film.builder()
+                .name("test film name")
+                .description("description")
+                .duration(100)
+                .releaseDate(LocalDate.of(1967, 3, 25))
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+        film0.getGenres().add(Genre.builder()
+                .id(1)
+                .build());
+        directorStorage.createDirector(Director.builder()
+                .id(1)
+                .name("master")
+                .build());
+
+        Film film1 = Film.builder()
+                .name("film name")
+                .description("description")
+                .duration(100)
+                .releaseDate(LocalDate.of(1600, 6, 1))
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+        film1.getGenres().add(Genre.builder()
+                .id(1)
+                .build());
+        directorStorage.createDirector(Director.builder()
+                .id(1)
+                .name("palma")
+                .build());
+        film1.getDirectors().add(directorStorage.getDirector(1));
+
+        filmStorage.createFilm(film0);
+        filmStorage.createFilm(film1);
+
+        String query1 = "tes";
+        String query2 = "master";
+        String query3 = "palma";
+        String by1 = "film";
+        String by2 = "director";
+        String by3 = "";
+        List<Film> test = new  ArrayList<>();
+        List<Film> test1 = new  ArrayList<>();
+        List<Film> test2 = new ArrayList<>();
+
+       test = filmController.searchFilms(query1, by1);
+       test1 = filmController.searchFilms(query2, by2);
+       test2 = filmController.searchFilms(query1, by3);
+
+
+        assertEquals(1, test.size());
+        assertEquals(1, test1.size());
+        assertEquals(1, test2.size());
     }
 }
