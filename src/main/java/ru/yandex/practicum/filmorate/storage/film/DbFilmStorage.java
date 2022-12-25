@@ -45,14 +45,12 @@ public class DbFilmStorage implements FilmStorage {
                     preparedStatement.setInt(4, film.getDuration());
                     preparedStatement.setInt(5, film.getMpa().getId());
                     return preparedStatement;
-                    },
+                },
                 keyHolder
         );
         film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-
         addFilmGenres(film);
         addFilmDirectors(film);
-
         return getFilm(film.getId());
     }
 
@@ -70,13 +68,10 @@ public class DbFilmStorage implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId()
         );
-
         removeFilmGenres(film);
         addFilmGenres(film);
-
         removeFilmDirectors(film);
         addFilmDirectors(film);
-
         return getFilm(film.getId());
     }
 
@@ -94,7 +89,6 @@ public class DbFilmStorage implements FilmStorage {
                 "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
                 "WHERE f.film_id = ?";
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilms, filmId);
-
         if (films.size() == 0) {
             throw new NotFoundException("Фильма с таким id не существует.");
         }
@@ -174,7 +168,6 @@ public class DbFilmStorage implements FilmStorage {
     public Boolean addLike(int filmId, int userId) {
         getFilm(filmId);
         dbUserStorage.getUser(userId);
-
         final String sqlQuery = "MERGE INTO LIKES (FILM_ID, USER_ID) " +
                 "VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, filmId, userId);
@@ -185,7 +178,6 @@ public class DbFilmStorage implements FilmStorage {
     public Boolean removeLike(int filmId, int userId) {
         getFilm(filmId);
         dbUserStorage.getUser(userId);
-
         final String sqlQuery = "DELETE FROM LIKES " +
                 "WHERE FILM_ID = ?" +
                 "AND USER_ID = ?";
@@ -206,18 +198,16 @@ public class DbFilmStorage implements FilmStorage {
                 "LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
                 "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
                 "LEFT JOIN (" +
-                    "SELECT l.FILM_ID, COUNT(l.USER_ID) AS rate " +
-                    "FROM LIKES AS l " +
-                    "GROUP BY l.FILM_ID" +
+                "SELECT l.FILM_ID, COUNT(l.USER_ID) AS rate " +
+                "FROM LIKES AS l " +
+                "GROUP BY l.FILM_ID" +
                 ") AS r ON f.FILM_ID = r.FILM_ID " +
                 "ORDER BY r.rate DESC";
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilms);
-
         List<Film> result = new ArrayList<>();
         films.stream()
                 .limit(count)
                 .forEach(result::add);
-
         return result;
     }
 
@@ -227,7 +217,6 @@ public class DbFilmStorage implements FilmStorage {
         while (resultSet.next()) {
             int id = resultSet.getInt("FILM_ID");
             orderId.add(id);
-
             films.putIfAbsent(id, Film.builder()
                     .id(resultSet.getInt("FILM_ID"))
                     .name(resultSet.getString("FILMS.NAME"))
@@ -241,7 +230,6 @@ public class DbFilmStorage implements FilmStorage {
                             .build())
                     .build()
             );
-
             Genre genre = Genre.builder()
                     .id(resultSet.getInt("GENRE_ID"))
                     .name(resultSet.getString("GENRES.NAME"))
@@ -249,7 +237,6 @@ public class DbFilmStorage implements FilmStorage {
             if (genre.getId() != 0) {
                 films.get(id).getGenres().add(genre);
             }
-
             Director director = Director.builder()
                     .id(resultSet.getInt("DIRECTOR_ID"))
                     .name(resultSet.getString("DIRECTORS.NAME"))
@@ -258,7 +245,6 @@ public class DbFilmStorage implements FilmStorage {
                 films.get(id).getDirectors().add(director);
             }
         }
-
         List<Film> orderResult = new ArrayList<>();
         orderId.stream()
                 .distinct()
@@ -269,7 +255,6 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public List<Film> getFilmsByDirectorSortLikes(int id) {
         dbDirectorStorage.getDirector(id);
-
         final String sqlQuery = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
                 "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
                 "g.GENRE_ID, g.NAME, " +
@@ -287,14 +272,12 @@ public class DbFilmStorage implements FilmStorage {
                 ") AS r ON f.FILM_ID = r.FILM_ID " +
                 "WHERE fd.DIRECTOR_ID = ? " +
                 "ORDER BY r.rate DESC";
-
         return jdbcTemplate.query(sqlQuery, this::makeFilms, id);
     }
 
     @Override
     public List<Film> getFilmsByDirectorSortYear(int id) {
         dbDirectorStorage.getDirector(id);
-
         final String sqlQuery = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
                 "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
                 "g.GENRE_ID, g.NAME, " +
@@ -307,30 +290,34 @@ public class DbFilmStorage implements FilmStorage {
                 "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
                 "WHERE fd.DIRECTOR_ID = ? " +
                 "ORDER BY EXTRACT(YEAR FROM f.RELEASE_DATE)";
-
         return jdbcTemplate.query(sqlQuery, this::makeFilms, id);
     }
 
-    public List<Film> receiveFilmRecommendations(int userID) {
-        String sqlQuery = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
-                "       m.MPA_ID, m.NAME, m.DESCRIPTION, " +
-                "       g.GENRE_ID, g.NAME, " +
-                "       d.DIRECTOR_ID, d.NAME " +
-                "FROM FILMS AS f " +
-                "         JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
-                "         LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
-                "         LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
-                "         LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
-                "         LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
-                "WHERE f.film_id in (select LIKES.FILM_ID from LIKES " +
-                "                    where LIKES.USER_ID = ( " +
-                "                        select  LIKES.USER_ID from LIKES where " +
-                "                                LIKES.FILM_ID in (select LIKES.FILM_ID from LIKES where LIKES.USER_ID = ?) " +
-                "                                                           and LIKES.USER_ID != ? " +
-                "                        group by LIKES.USER_ID " +
-                "                        order by count(LIKES.FILM_ID) desc " +
-                "                        limit 1) " +
-                "                      and LIKES.FILM_ID not in (select LIKES.FILM_ID from LIKES where LIKES.USER_ID = ?)) ";
+    @Override
+    public final List<Film> receiveFilmRecommendations(int userID) {
+    /*
+    This query searches for a user with the most intersections of liked films with a given user (which id is userID).
+    Then query searches for all films of this user which are not intersected with films of the given user.
+     */
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, " +
+                "m.mpa_id, m.name, m.description, " +
+                "g.genre_id, g.name, " +
+                "d.director_id, d.name " +
+                "FROM films AS f " +
+                "JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN films_genres AS fg ON f.film_id = fg.film_id " +
+                "LEFT JOIN genres AS g ON fg.genre_id = g.genre_id " +
+                "LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id " +
+                "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
+                "WHERE f.film_id IN (SELECT likes.film_id FROM likes " +
+                "WHERE likes.user_id = ( " +
+                "SELECT  likes.user_id FROM likes WHERE " +
+                "likes.film_id IN (SELECT likes.film_id FROM likes WHERE likes.user_id = ?) " +
+                "AND likes.user_id != ? " +
+                "GROUP BY likes.user_id " +
+                "ORDER BY COUNT(likes.film_id) DESC " +
+                "LIMIT 1) " +
+                "AND likes.film_id NOT IN (SELECT likes.film_id FROM likes WHERE likes.user_id = ?)) ";
         return jdbcTemplate.query(sqlQuery, this::makeFilms, userID, userID, userID);
     }
 }

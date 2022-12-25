@@ -80,6 +80,7 @@ public class UserService {
     }
 
     public List<Film> receiveFilmRecommendations(int userId) {
+        log.info("Выводим рекомендации фильмов для пользователя с id {} ", userId);
         return filmStorage.receiveFilmRecommendations(userId);
     }
 }
