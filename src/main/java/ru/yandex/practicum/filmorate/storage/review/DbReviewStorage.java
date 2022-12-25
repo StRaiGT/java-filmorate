@@ -145,21 +145,21 @@ public class DbReviewStorage implements ReviewStorage {
     }
 
     @Override
-    public boolean removeLikeReview(int id, int userId) {
+    public Boolean removeLikeReview(int id, int userId) {
         String sqlQuery = "DELETE FROM LIKES_REVIEWS WHERE REVIEW_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
         return true;
     }
 
     @Override
-    public boolean removeDislikeReview(int id, int userId) {
+    public Boolean removeDislikeReview(int id, int userId) {
         String sqlQuery = "DELETE FROM DISLIKE_REVIEWS WHERE REVIEW_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
         return true;
     }
 
     @Override
-    public boolean removeReview(int id) {
+    public Boolean removeReview(int id) {
         jdbcTemplate.update("DELETE FROM LIKES_REVIEWS WHERE REVIEW_ID = ?", id);
         jdbcTemplate.update("DELETE FROM DISLIKE_REVIEWS WHERE REVIEW_ID = ?", id);
         jdbcTemplate.update("DELETE FROM REVIEWS WHERE REVIEW_ID = ?", id);

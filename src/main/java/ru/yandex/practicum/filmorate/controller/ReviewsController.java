@@ -35,7 +35,7 @@ public class ReviewsController {
     }
 
     @DeleteMapping("{id}")
-    public boolean removeReview(@PathVariable int id) {
+    public Boolean removeReview(@PathVariable int id) {
         return reviewService.removeReview(id);
     }
 
@@ -62,12 +62,12 @@ public class ReviewsController {
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public boolean removeLikeReview(@PathVariable int id, @PathVariable int userId) {
+    public Boolean removeLikeReview(@PathVariable int id, @PathVariable int userId) {
         return reviewService.removeLikeReview(id, userId);
     }
 
     @DeleteMapping("{id}/dislike/{userId}")
-    public boolean removeDislikeReview(@PathVariable int id, @PathVariable int userId) {
+    public Boolean removeDislikeReview(@PathVariable int id, @PathVariable int userId) {
         return reviewService.removeDislikeReview(id, userId);
     }
 

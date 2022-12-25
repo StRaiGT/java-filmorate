@@ -33,7 +33,7 @@ public class ReviewService {
         return reviewStorage.updateReview(review);
     }
 
-    public boolean removeReview(int id) {
+    public Boolean removeReview(int id) {
         log.info("Удаление отзыва с id {}", id);
         return reviewStorage.removeReview(id);
     }
@@ -58,12 +58,12 @@ public class ReviewService {
         reviewStorage.addDislikeReview(id, userId);
     }
 
-    public boolean removeLikeReview(int id, int userId) {
+    public Boolean removeLikeReview(int id, int userId) {
         log.info("Удаление лайка отзыву с id {}", id);
         return reviewStorage.removeLikeReview(id, userId);
     }
 
-    public boolean removeDislikeReview(int id, int userId) {
+    public Boolean removeDislikeReview(int id, int userId) {
         log.info("Удаление дизлайка отзыву с id {}", id);
         return reviewStorage.removeDislikeReview(id, userId);
     }
