@@ -132,11 +132,6 @@ public class DbUserStorage implements UserStorage{
         return jdbcTemplate.query(sqlQuery, this::makeUser, userId, friendId);
     }
 
-    @Override
-    public Boolean checkUserExist(Integer id) {
-        return null;
-    }
-
     private User makeUser(ResultSet resultSet, int rowNum) throws SQLException {
         return User.builder()
                 .id(resultSet.getInt("USER_ID"))
@@ -145,5 +140,11 @@ public class DbUserStorage implements UserStorage{
                 .name(resultSet.getString("NAME"))
                 .birthday(resultSet.getDate("BIRTHDAY").toLocalDate())
                 .build();
+    }
+    @Override
+    public Boolean checkUserExist(Integer id) {
+        String sql = "SELECT exists (SELECT * FROM USERS WHERE USER_ID = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 }
