@@ -378,6 +378,7 @@ public class DbFilmStorage implements FilmStorage {
 
                     return jdbcTemplate.query(sqlByDirector, this::makeFilms, query);
                 } else {
+
                     return jdbcTemplate.query(sqlByFilm, this::makeFilms, query);
                 }
             } else {
