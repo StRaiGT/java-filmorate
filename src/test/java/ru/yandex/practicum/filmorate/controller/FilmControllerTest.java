@@ -1404,7 +1404,7 @@ public class FilmControllerTest {
                 .name("name")
                 .description("description")
                 .duration(100)
-                .releaseDate(LocalDate.of(1600, 6, 1))
+                .releaseDate(LocalDate.of(1999, 6, 1))
                 .mpa(Mpa.builder().id(2).build())
                 .build();
         film1.getGenres().add(Genre.builder()
