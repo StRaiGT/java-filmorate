@@ -1387,7 +1387,7 @@ public class FilmControllerTest {
     @Test
     public void shouldTestFilm() {
         Film film0 = Film.builder()
-                .name("test film name")
+                .name("test")
                 .description("description")
                 .duration(100)
                 .releaseDate(LocalDate.of(1967, 3, 25))
@@ -1400,43 +1400,46 @@ public class FilmControllerTest {
                 .id(1)
                 .name("master")
                 .build());
+        film0.getDirectors().add(directorStorage.getDirector(1));
 
         Film film1 = Film.builder()
-                .name("film name")
+                .name("name")
                 .description("description")
                 .duration(100)
                 .releaseDate(LocalDate.of(1600, 6, 1))
-                .mpa(Mpa.builder().id(1).build())
+                .mpa(Mpa.builder().id(2).build())
                 .build();
         film1.getGenres().add(Genre.builder()
-                .id(1)
+                .id(2)
                 .build());
         directorStorage.createDirector(Director.builder()
-                .id(1)
+                .id(2)
                 .name("palma")
                 .build());
-        film1.getDirectors().add(directorStorage.getDirector(1));
+        film1.getDirectors().add(directorStorage.getDirector(2));
 
         filmStorage.createFilm(film0);
         filmStorage.createFilm(film1);
 
-        String query1 = "tes";
-        String query2 = "master";
+        String query1 = "master";
+        String by1 = "director";
+
+        String query2 = "test";
+        String by2 = "title";
+
         String query3 = "palma";
-        String by1 = "film";
-        String by2 = "director";
-        String by3 = "";
-        List<Film> test = new  ArrayList<>();
-        List<Film> test1 = new  ArrayList<>();
-        List<Film> test2 = new ArrayList<>();
+        String by3 = "director,title";
 
-       test = filmController.searchFilms(query1, by1);
-       test1 = filmController.searchFilms(query2, by2);
-       test2 = filmController.searchFilms(query1, by3);
-
+       List<Film> test = filmController.searchFilms(query1, by1);
+       List<Film> test1 = filmController.searchFilms(query2, by2);
+       List<Film> test2 = filmController.searchFilms(query3, by3);
 
         assertEquals(1, test.size());
         assertEquals(1, test1.size());
         assertEquals(1, test2.size());
+
+        assertEquals(new ArrayList<>(film0.getDirectors()).get(0).getName(), new ArrayList<>(test.get(0).getDirectors()).get(0).getName());
+        assertEquals(film0.getName(), test1.get(0).getName());
+        assertEquals(new ArrayList<>(film1.getDirectors()).get(0).getName(), new ArrayList<>(test2.get(0).getDirectors()).get(0).getName());
     }
 }
