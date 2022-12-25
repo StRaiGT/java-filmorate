@@ -294,12 +294,12 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public final List<Film> receiveFilmRecommendations(int userID) {
+    public List<Film> receiveFilmRecommendations(int userID) {
     /*
     This query searches for a user with the most intersections of liked films with a given user (which id is userID).
     Then query searches for all films of this user which are not intersected with films of the given user.
      */
-        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, " +
+        final String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, " +
                 "m.mpa_id, m.name, m.description, " +
                 "g.genre_id, g.name, " +
                 "d.director_id, d.name " +
