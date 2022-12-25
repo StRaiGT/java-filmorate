@@ -52,13 +52,13 @@ public class ReviewsController {
     }
 
     @PutMapping("{id}/like/{userId}")
-    public void addLikeReview(@PathVariable int id, @PathVariable int userId) {
-        reviewService.addLikeReview(id, userId);
+    public Boolean addLikeReview(@PathVariable int id, @PathVariable int userId) {
+        return reviewService.addLikeReview(id, userId);
     }
 
     @PutMapping("{id}/dislike/{userId}")
-    public void addDislikeReview(@PathVariable int id, @PathVariable int userId) {
-        reviewService.addDislikeReview(id, userId);
+    public Boolean addDislikeReview(@PathVariable int id, @PathVariable int userId) {
+        return reviewService.addDislikeReview(id, userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")

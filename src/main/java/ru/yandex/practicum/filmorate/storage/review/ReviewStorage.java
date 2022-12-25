@@ -14,9 +14,9 @@ public interface ReviewStorage {
 
     Optional<Review> updateReview(Review review);
 
-    void addLikeReview(int id, int userId);
+    Boolean addLikeReview(int id, int userId);
 
-    void addDislikeReview(int id, int userId);
+    Boolean addDislikeReview(int id, int userId);
 
     Boolean removeLikeReview(int id, int userId);
 

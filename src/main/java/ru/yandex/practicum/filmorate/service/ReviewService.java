@@ -48,14 +48,14 @@ public class ReviewService {
         return reviewStorage.getReviews(filmId, count);
     }
 
-    public void addLikeReview(int id, int userId) {
+    public Boolean addLikeReview(int id, int userId) {
         log.info("Добавление лайка отзыву с id {}", id);
-        reviewStorage.addLikeReview(id, userId);
+        return reviewStorage.addLikeReview(id, userId);
     }
 
-    public void addDislikeReview(int id, int userId) {
+    public Boolean addDislikeReview(int id, int userId) {
         log.info("Добавление дизлайка отзыву с id {}", id);
-        reviewStorage.addDislikeReview(id, userId);
+        return reviewStorage.addDislikeReview(id, userId);
     }
 
     public Boolean removeLikeReview(int id, int userId) {

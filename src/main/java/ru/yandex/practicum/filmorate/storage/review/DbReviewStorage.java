@@ -131,17 +131,19 @@ public class DbReviewStorage implements ReviewStorage {
     }
 
     @Override
-    public void addLikeReview(int id, int userId) {
+    public Boolean addLikeReview(int id, int userId) {
         final String sqlQueryFilm = "INSERT INTO LIKES_REVIEWS (REVIEW_ID, USER_ID)" +
                 "VALUES (?, ?)";
         jdbcTemplate.update(sqlQueryFilm, id, userId);
+        return true;
     }
 
     @Override
-    public void addDislikeReview(int id, int userId) {
+    public Boolean addDislikeReview(int id, int userId) {
         final String sqlQueryFilm = "INSERT INTO DISLIKE_REVIEWS (REVIEW_ID, USER_ID)" +
                 "VALUES (?, ?)";
         jdbcTemplate.update(sqlQueryFilm, id, userId);
+        return true;
     }
 
     @Override
