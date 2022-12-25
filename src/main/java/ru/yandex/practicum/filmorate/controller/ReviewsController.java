@@ -1,7 +1,16 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
@@ -26,8 +35,8 @@ public class ReviewsController {
     }
 
     @DeleteMapping("{id}")
-    public void removeReview(@PathVariable int id) {
-        reviewService.removeReview(id);
+    public boolean removeReview(@PathVariable int id) {
+        return reviewService.removeReview(id);
     }
 
     @GetMapping("{id}")
@@ -53,13 +62,13 @@ public class ReviewsController {
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public void removeLikeReview(@PathVariable int id, @PathVariable int userId) {
-        reviewService.removeLikeReview(id, userId);
+    public boolean removeLikeReview(@PathVariable int id, @PathVariable int userId) {
+        return reviewService.removeLikeReview(id, userId);
     }
 
     @DeleteMapping("{id}/dislike/{userId}")
-    public void removeDislikeReview(@PathVariable int id, @PathVariable int userId) {
-        reviewService.removeDislikeReview(id, userId);
+    public boolean removeDislikeReview(@PathVariable int id, @PathVariable int userId) {
+        return reviewService.removeDislikeReview(id, userId);
     }
 
 }

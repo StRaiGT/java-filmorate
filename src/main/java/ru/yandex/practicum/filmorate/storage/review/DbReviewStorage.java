@@ -45,7 +45,7 @@ public class DbReviewStorage implements ReviewStorage {
     public Optional<Review> getReviewById(int id) {
         String sqlQuery = "select  *, ifnull(R.count_like, 0) - ifnull(R.count_dislaike, 0) AS USEFUL " +
                 "from (select R.*, L.count_like, L.count_dislaike " +
-                "from REVIEWS AS R\n" +
+                "from REVIEWS AS R " +
                 "left join (select LR.REVIEW_ID as REVIEW_ID, count(USER_ID) AS count_like, count_dislaike " +
                 "from LIKES_REVIEWS AS LR " +
                 "left JOIN (select DL.REVIEW_ID, count(USER_ID) AS count_dislaike " +
@@ -74,7 +74,7 @@ public class DbReviewStorage implements ReviewStorage {
         if (filmId == -1) {
             String sqlQuery = "select  *, ifnull(R.count_like, 0) - ifnull(R.count_dislaike, 0) AS USEFUL " +
                     "from (select R.*, L.count_like, L.count_dislaike " +
-                    "from REVIEWS AS R\n" +
+                    "from REVIEWS AS R " +
                     "left join (select LR.REVIEW_ID as REVIEW_ID, count(USER_ID) AS count_like, count_dislaike " +
                     "from LIKES_REVIEWS AS LR " +
                     "left JOIN (select DL.REVIEW_ID, count(USER_ID) AS count_dislaike " +
@@ -96,7 +96,7 @@ public class DbReviewStorage implements ReviewStorage {
         } else {
             String sqlQuery = "select  *, ifnull(R.count_like, 0) - ifnull(R.count_dislaike, 0) AS USEFUL " +
                     "from (select R.*, L.count_like, L.count_dislaike " +
-                    "from REVIEWS AS R\n" +
+                    "from REVIEWS AS R " +
                     "left join (select LR.REVIEW_ID as REVIEW_ID, count(USER_ID) AS count_like, count_dislaike " +
                     "from LIKES_REVIEWS AS LR " +
                     "left JOIN (select DL.REVIEW_ID, count(USER_ID) AS count_dislaike " +
@@ -145,22 +145,25 @@ public class DbReviewStorage implements ReviewStorage {
     }
 
     @Override
-    public void removeLikeReview(int id, int userId) {
+    public boolean removeLikeReview(int id, int userId) {
         String sqlQuery = "DELETE FROM LIKES_REVIEWS WHERE REVIEW_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
+        return true;
     }
 
     @Override
-    public void removeDislikeReview(int id, int userId) {
+    public boolean removeDislikeReview(int id, int userId) {
         String sqlQuery = "DELETE FROM DISLIKE_REVIEWS WHERE REVIEW_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
+        return true;
     }
 
     @Override
-    public void removeReview(int id) {
+    public boolean removeReview(int id) {
         jdbcTemplate.update("DELETE FROM LIKES_REVIEWS WHERE REVIEW_ID = ?", id);
         jdbcTemplate.update("DELETE FROM DISLIKE_REVIEWS WHERE REVIEW_ID = ?", id);
         jdbcTemplate.update("DELETE FROM REVIEWS WHERE REVIEW_ID = ?", id);
+        return true;
     }
 
     private Review makeReview(ResultSet resultSet, int rowNum) throws SQLException {
