@@ -311,8 +311,7 @@ public class DbFilmStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeFilms, id);
     }
     @Override
-    public List<Film> searchFilms(String query, String by) {
-
+    public List<Film> searchFilmsByDiretor(String query) {
         final String sqlByDirector = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
                 "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
                 "g.GENRE_ID, g.NAME, " +
@@ -323,8 +322,13 @@ public class DbFilmStorage implements FilmStorage {
                 "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
                 "LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
                 "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
-                "where LOWER(d.name) like ? ";
+                "WHERE LOWER(d.name) like ? ";
 
+        return jdbcTemplate.query(sqlByDirector, this::makeFilms, query);
+    }
+
+    @Override
+    public List<Film> searchFilmsByTitle(String query) {
         final String sqlByFilm = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
                 "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
                 "g.GENRE_ID, g.NAME, " +
@@ -335,8 +339,12 @@ public class DbFilmStorage implements FilmStorage {
                 "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
                 "LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
                 "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
-                "where LOWER(f.name) like ?";
+                "WHERE LOWER(f.name) like ?";
+        return jdbcTemplate.query(sqlByFilm, this::makeFilms, query);
+    }
 
+    @Override
+    public List<Film> searchFilmsByDirectorOrFilm(String filmName, String directorName) {
         final String sqlByFilmOrDirector = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
                 "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
                 "g.GENRE_ID, g.NAME, " +
@@ -347,47 +355,11 @@ public class DbFilmStorage implements FilmStorage {
                 "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
                 "LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
                 "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
-                "LEFT JOIN likes l on f.film_id = l.film_id " +
-                "where LOWER(f.name) LIKE ? OR LOWER(d.name) LIKE ?" +
-                "GROUP BY f.film_id ORDER BY COUNT(l.film_id) DESC";
-
-
-        final String sqlByNoArq = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
-                "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
-                "g.GENRE_ID, g.NAME, " +
-                "d.DIRECTOR_ID, d.NAME " +
-                "FROM FILMS AS f " +
-                "JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
-                "LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
-                "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
-                "LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
-                "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
-                "LEFT JOIN (" +
-                "SELECT l.FILM_ID, COUNT(l.USER_ID) AS rate " +
-                "FROM LIKES AS l " +
-                "GROUP BY l.FILM_ID" +
-                ") AS r ON f.FILM_ID = r.FILM_ID " +
-                "ORDER BY r.rate DESC";
-
-        query = "%" + query.toLowerCase() + "%";
-
-        String[] byList = by.split(",");
-        if (byList.length != 0) {
-            if (byList.length == 1) {
-                if (byList[0].equals("director")) {
-
-                    return jdbcTemplate.query(sqlByDirector, this::makeFilms, query);
-                } else {
-
-                    return jdbcTemplate.query(sqlByFilm, this::makeFilms, query);
-                }
-            } else {
-
-                return jdbcTemplate.query(sqlByFilmOrDirector, this::makeFilms, query, query);
-            }
-        } else {
-
-            return jdbcTemplate.query(sqlByNoArq, this::makeFilms);
-        }
+                "LEFT JOIN LIKES l on f.film_id = l.film_id " +
+                "WHERE LOWER(f.name) LIKE ? OR " +
+                "LOWER(d.name) LIKE ? " +
+                "GROUP BY f.film_id, g.GENRE_ID, d.DIRECTOR_ID " +
+                "ORDER BY COUNT(l.film_id) DESC";
+        return jdbcTemplate.query(sqlByFilmOrDirector, this::makeFilms, filmName, directorName);
     }
 }
