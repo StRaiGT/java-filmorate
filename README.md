@@ -25,6 +25,7 @@
 - `[DELETE] /users/{id}/friends/{friendId}` – удалить у пользователя `id` из друзей пользователя `friendId`
 - `[GET] /users/{id}/friends` – получить список всех друзей пользователя `id`
 - `[GET] /users/{id}/friends/common/{otherId}` – получить список общих друзей пользователей `id` и `otherId`
+- `[GET] /users/{id}//recommendations` – получить список рекомендованных фильмов для пользователя `id`
 
 ### Mpa
 - `[GET] /mpa` – получить список всех возрастных рейтингов
