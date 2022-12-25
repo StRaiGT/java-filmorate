@@ -34,7 +34,6 @@ public class FilmControllerTest {
     private final FilmController filmController;
     private final UserStorage userStorage;
     private final DirectorStorage directorStorage;
-    private final FilmStorage filmStorage;
 
     @Test
     public void shouldAddFilmWithValidFields() {
@@ -1418,8 +1417,8 @@ public class FilmControllerTest {
                 .build());
         film1.getDirectors().add(directorStorage.getDirector(2));
 
-        filmStorage.createFilm(film0);
-        filmStorage.createFilm(film1);
+        filmController.createFilm(film0);
+        filmController.createFilm(film1);
 
         String query1 = "master";
         String by1 = "director";
