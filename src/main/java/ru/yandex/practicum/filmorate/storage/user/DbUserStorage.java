@@ -73,6 +73,11 @@ public class DbUserStorage implements UserStorage{
     }
 
     @Override
+    public Boolean deleteUser(int id) {
+        return null;
+    }
+
+    @Override
     public List<User> getAllUsers() {
         final String sqlQuery = "SELECT * " +
                 "FROM USERS";
@@ -125,6 +130,11 @@ public class DbUserStorage implements UserStorage{
                     "FROM FRIENDSHIP " +
                     "where USER_ID = ?)";
         return jdbcTemplate.query(sqlQuery, this::makeUser, userId, friendId);
+    }
+
+    @Override
+    public Boolean checkUserExist(Integer id) {
+        return null;
     }
 
     private User makeUser(ResultSet resultSet, int rowNum) throws SQLException {
