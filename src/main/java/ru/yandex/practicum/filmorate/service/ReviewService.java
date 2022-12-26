@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -31,7 +30,7 @@ public class ReviewService {
         validateOfReview(review);
         log.info("Добавление отзыва {}", review);
         Optional<Review> result = reviewStorage.createReview(review);
-        feedService.add(result.get().getReviewId(), result.get().getUserId(), REVIEW, Operation.ADD);
+        feedService.add(result.get().getReviewId(), result.get().getUserId(), REVIEW, ADD);
         return result;
     }
 
