@@ -320,4 +320,57 @@ public class DbFilmStorage implements FilmStorage {
                 "AND likes.film_id NOT IN (SELECT likes.film_id FROM likes WHERE likes.user_id = ?)) ";
         return jdbcTemplate.query(sqlQuery, this::makeFilms, userID, userID, userID);
     }
+
+    @Override
+    public List<Film> searchFilmsByDirector(String query) {
+        final String sqlByDirector = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
+                "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
+                "g.GENRE_ID, g.NAME, " +
+                "d.DIRECTOR_ID, d.NAME " +
+                "FROM FILMS AS f " +
+                "JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
+                "LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
+                "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
+                "LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
+                "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                "WHERE LOWER(d.name) like ? ";
+
+        return jdbcTemplate.query(sqlByDirector, this::makeFilms, query);
+    }
+
+    @Override
+    public List<Film> searchFilmsByTitle(String query) {
+        final String sqlByFilm = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
+                "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
+                "g.GENRE_ID, g.NAME, " +
+                "d.DIRECTOR_ID, d.NAME " +
+                "FROM FILMS AS f " +
+                "JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
+                "LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
+                "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
+                "LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
+                "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                "WHERE LOWER(f.name) like ?";
+        return jdbcTemplate.query(sqlByFilm, this::makeFilms, query);
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirectorOrFilm(String filmName, String directorName) {
+        final String sqlByFilmOrDirector = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
+                "m.MPA_ID, m.NAME, m.DESCRIPTION, " +
+                "g.GENRE_ID, g.NAME, " +
+                "d.DIRECTOR_ID, d.NAME " +
+                "FROM FILMS AS f " +
+                "JOIN MPA AS m ON f.MPA_ID = m.MPA_ID " +
+                "LEFT JOIN FILMS_GENRES AS fg ON f.FILM_ID = fg.FILM_ID " +
+                "LEFT JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
+                "LEFT JOIN FILMS_DIRECTORS AS fd ON f.FILM_ID = fd.FILM_ID " +
+                "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                "LEFT JOIN LIKES l on f.film_id = l.film_id " +
+                "WHERE LOWER(f.name) LIKE ? OR " +
+                "LOWER(d.name) LIKE ? " +
+                "GROUP BY f.film_id, g.GENRE_ID, d.DIRECTOR_ID " +
+                "ORDER BY COUNT(l.film_id) DESC";
+        return jdbcTemplate.query(sqlByFilmOrDirector, this::makeFilms, filmName, directorName);
+    }
 }

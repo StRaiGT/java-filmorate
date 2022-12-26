@@ -1381,4 +1381,63 @@ public class FilmControllerTest {
 
         assertEquals(arr.size(), 0);
     }
+
+    @Test
+    public void shouldTestFilm() {
+        Film film0 = Film.builder()
+                .name("test")
+                .description("description")
+                .duration(100)
+                .releaseDate(LocalDate.of(1967, 3, 25))
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+        film0.getGenres().add(Genre.builder()
+                .id(1)
+                .build());
+        directorStorage.createDirector(Director.builder()
+                .id(1)
+                .name("master")
+                .build());
+        film0.getDirectors().add(directorStorage.getDirector(1));
+
+        Film film1 = Film.builder()
+                .name("name")
+                .description("description")
+                .duration(100)
+                .releaseDate(LocalDate.of(1999, 6, 1))
+                .mpa(Mpa.builder().id(2).build())
+                .build();
+        film1.getGenres().add(Genre.builder()
+                .id(2)
+                .build());
+        directorStorage.createDirector(Director.builder()
+                .id(2)
+                .name("palma")
+                .build());
+        film1.getDirectors().add(directorStorage.getDirector(2));
+
+        filmController.createFilm(film0);
+        filmController.createFilm(film1);
+
+        String query1 = "master";
+        String by1 = "director";
+
+        String query2 = "test";
+        String by2 = "title";
+
+        String query3 = "palma";
+        String by3 = "director,title";
+
+       List<Film> test = filmController.searchFilms(query1, by1);
+       List<Film> test1 = filmController.searchFilms(query2, by2);
+       List<Film> test2 = filmController.searchFilms(query3, by3);
+
+        assertEquals(1, test.size());
+        assertEquals(1, test1.size());
+        assertEquals(1, test2.size());
+
+        assertEquals(new ArrayList<>(film0.getDirectors()).get(0).getName(), new ArrayList<>(test.get(0).getDirectors()).get(0).getName());
+        assertEquals(film0.getName(), test1.get(0).getName());
+        assertEquals(new ArrayList<>(film1.getDirectors()).get(0).getName(), new ArrayList<>(test2.get(0).getDirectors()).get(0).getName());
+    }
 }
