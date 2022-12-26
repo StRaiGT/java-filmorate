@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.storage.feed.Operation;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -14,8 +14,8 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.Collection;
 import java.util.Optional;
 
-import static ru.yandex.practicum.filmorate.storage.feed.EventType.REVIEW;
-import static ru.yandex.practicum.filmorate.storage.feed.Operation.*;
+import static ru.yandex.practicum.filmorate.enums.EventType.REVIEW;
+import static ru.yandex.practicum.filmorate.enums.Operation.*;
 
 @Slf4j
 @Service

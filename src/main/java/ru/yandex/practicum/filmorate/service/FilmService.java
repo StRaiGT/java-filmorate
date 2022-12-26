@@ -10,9 +10,9 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import java.time.LocalDate;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.storage.feed.EventType.LIKE;
-import static ru.yandex.practicum.filmorate.storage.feed.Operation.ADD;
-import static ru.yandex.practicum.filmorate.storage.feed.Operation.REMOVE;
+import static ru.yandex.practicum.filmorate.enums.EventType.LIKE;
+import static ru.yandex.practicum.filmorate.enums.Operation.ADD;
+import static ru.yandex.practicum.filmorate.enums.Operation.REMOVE;
 
 @Service
 @RequiredArgsConstructor

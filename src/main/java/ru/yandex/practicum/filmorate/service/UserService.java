@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IllegalAddFriendException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -14,9 +13,9 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.storage.feed.EventType.FRIEND;
-import static ru.yandex.practicum.filmorate.storage.feed.Operation.ADD;
-import static ru.yandex.practicum.filmorate.storage.feed.Operation.REMOVE;
+import static ru.yandex.practicum.filmorate.enums.EventType.FRIEND;
+import static ru.yandex.practicum.filmorate.enums.Operation.ADD;
+import static ru.yandex.practicum.filmorate.enums.Operation.REMOVE;
 
 @Service
 @RequiredArgsConstructor

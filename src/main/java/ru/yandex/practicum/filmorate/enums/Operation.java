@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.feed;
+package ru.yandex.practicum.filmorate.enums;
 
 public enum Operation {
     REMOVE,
