@@ -38,7 +38,7 @@ public class ReviewService {
     public Optional<Review> updateReview(Review review) {
         validateOfReview(review);
         log.info("обновление отзыва {}", review);
-        feedService.add(review.getReviewId(), review.getUserId(), REVIEW, UPDATE);
+        feedService.add(review.getReviewId(), reviewStorage.getReviewById(review.getReviewId()).get().getUserId(), REVIEW, UPDATE);
         return reviewStorage.updateReview(review);
     }
 
@@ -62,7 +62,6 @@ public class ReviewService {
 
     public Boolean addLikeReview(int id, int userId) {
         log.info("Добавление лайка отзыву с id {}", id);
-        feedService.add(id, userId, REVIEW, ADD);
         return reviewStorage.addLikeReview(id, userId);
     }
 
