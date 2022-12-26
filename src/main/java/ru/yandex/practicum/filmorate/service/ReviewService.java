@@ -3,14 +3,20 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.feed.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.Optional;
+
+import static ru.yandex.practicum.filmorate.storage.feed.EventType.REVIEW;
+import static ru.yandex.practicum.filmorate.storage.feed.Operation.REMOVE;
+import static ru.yandex.practicum.filmorate.storage.feed.Operation.UPDATE;
 
 @Slf4j
 @Service
@@ -20,21 +26,27 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FeedService feedService;
 
     public Optional<Review> createReview(Review review) {
         validateOfReview(review);
         log.info("Добавление отзыва {}", review);
+        feedService.add(review.getReviewId(), review.getUserId(), REVIEW, Operation.ADD);
         return reviewStorage.createReview(review);
     }
 
     public Optional<Review> updateReview(Review review) {
         validateOfReview(review);
         log.info("обновление отзыва {}", review);
+        feedService.add(review.getReviewId(), review.getUserId(), REVIEW, UPDATE);
         return reviewStorage.updateReview(review);
     }
 
     public Boolean removeReview(int id) {
         log.info("Удаление отзыва с id {}", id);
+        Review rw = reviewStorage.getReviewById(id)
+                .orElseThrow(() -> new NotFoundException("Отзыв не найден"));
+        feedService.add(rw.getReviewId(), rw.getUserId(), REVIEW, REMOVE);
         return reviewStorage.removeReview(id);
     }
 

@@ -155,4 +155,10 @@ public class DbUserStorage implements UserStorage{
                 .birthday(resultSet.getDate("BIRTHDAY").toLocalDate())
                 .build();
     }
+    @Override
+    public Boolean checkUserExist(Integer id) {
+        String sql = "SELECT exists (SELECT * FROM USERS WHERE USER_ID = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
 }
