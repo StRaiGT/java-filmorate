@@ -15,8 +15,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.storage.feed.EventType.REVIEW;
-import static ru.yandex.practicum.filmorate.storage.feed.Operation.REMOVE;
-import static ru.yandex.practicum.filmorate.storage.feed.Operation.UPDATE;
+import static ru.yandex.practicum.filmorate.storage.feed.Operation.*;
 
 @Slf4j
 @Service
@@ -31,8 +30,9 @@ public class ReviewService {
     public Optional<Review> createReview(Review review) {
         validateOfReview(review);
         log.info("Добавление отзыва {}", review);
-        feedService.add(review.getReviewId(), review.getUserId(), REVIEW, Operation.ADD);
-        return reviewStorage.createReview(review);
+        Optional<Review> result = reviewStorage.createReview(review);
+        feedService.add(result.get().getReviewId(), result.get().getUserId(), REVIEW, Operation.ADD);
+        return result;
     }
 
     public Optional<Review> updateReview(Review review) {
@@ -62,6 +62,7 @@ public class ReviewService {
 
     public Boolean addLikeReview(int id, int userId) {
         log.info("Добавление лайка отзыву с id {}", id);
+        feedService.add(id, userId, REVIEW, ADD);
         return reviewStorage.addLikeReview(id, userId);
     }
 
