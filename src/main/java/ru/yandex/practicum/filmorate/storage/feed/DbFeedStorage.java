@@ -14,23 +14,18 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class DbFeedStorage implements FeedStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public List<Feed> findByUserId(int id) {
-
-        String sql = "SELECT * FROM FEED WHERE USER_ID = ? ORDER BY timestamp ASC";
-
+        final String sql = "SELECT * FROM FEED WHERE USER_ID = ? ORDER BY timestamp ASC";
         return jdbcTemplate.query(sql, this::makeFeed, id);
     }
 
     @Override
     public void addFeed(int entityId, int userId, long timestamp, EventType eventType, Operation operation) {
-
-        String sql = "INSERT INTO FEED(ENTITY_ID, USER_ID, timestamp, EVENT_TYPE, OPERATION) " +
+        final String sql = "INSERT INTO FEED(ENTITY_ID, USER_ID, timestamp, EVENT_TYPE, OPERATION) " +
                 "VALUES (?, ?, ?, ?, ?)";
-
         jdbcTemplate.update(sql, entityId, userId, timestamp,
                 eventType.toString(), operation.toString());
     }
