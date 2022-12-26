@@ -68,16 +68,16 @@ public class UserService {
         if (userId == friendId) {
             throw new IllegalAddFriendException("Пользователь не может добавить в друзья себя самого.");
         }
-        checkUserExist(userId);
-        checkUserExist(friendId);
+        getUserById(userId);
+        getUserById(friendId);
         feedService.add(friendId, userId, FRIEND, ADD);
         return userStorage.addFriend(userId, friendId);
     }
 
     public Boolean removeFriend(int userId, int friendId) {
         log.info("Удаляем из друзей пользователей с id {} и {}.", userId, friendId);
-        checkUserExist(userId);
-        checkUserExist(friendId);
+        getUserById(userId);
+        getUserById(friendId);
         feedService.add(friendId, userId, FRIEND, REMOVE);
         return userStorage.removeFriend(userId, friendId);
     }
@@ -96,13 +96,9 @@ public class UserService {
         log.info("Выводим рекомендации фильмов для пользователя с id {} ", userId);
         return filmStorage.receiveFilmRecommendations(userId);
     }
-    public void checkUserExist(Integer id) {
-        if (!userStorage.checkUserExist(id)) {
-            throw new NotFoundException(String.format("User with id: %d not found", id));
-        }
-    }
+
     public List<Feed> getFeedByUserId(Integer id) {
-        checkUserExist(id);
+        getUserById(id);
         return feedService.getByUserId(id);
     }
 }
