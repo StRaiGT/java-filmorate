@@ -12,7 +12,7 @@
 - `[GET] /films/popular?count={count}` – получить топ `count` самых популярных фильмов
 - `[PUT] /films/{id}/like/{userId}` – поставить лайк фильму `id` от пользователя `userId`
 - `[DELETE] /films/{id}/like/{userId}` – удалить лайк у фильма `id` от пользователя `userId`
-- `[GET] /films/director/{directorId}?sortBy=[year,likes]` - получить список фильмов режиссера отсортированных 
+- `[GET] /films/director/{directorId}?sortBy={[year,likes]}` - получить список фильмов режиссера отсортированных 
 по количеству лайков или году выпуска
 - `[GET] /films/search?query={query}&by={[director,title]}` - поиск по имени режиссера или по названию фильма
 
@@ -26,7 +26,7 @@
 - `[DELETE] /users/{id}/friends/{friendId}` – удалить у пользователя `id` из друзей пользователя `friendId`
 - `[GET] /users/{id}/friends` – получить список всех друзей пользователя `id`
 - `[GET] /users/{id}/friends/common/{otherId}` – получить список общих друзей пользователей `id` и `otherId`
-- `[GET] /users/{id}//recommendations` – получить список рекомендованных фильмов для пользователя `id`
+- `[GET] /users/{id}/recommendations` – получить список рекомендованных фильмов для пользователя `id`
 
 ### Mpa
 - `[GET] /mpa` – получить список всех возрастных рейтингов

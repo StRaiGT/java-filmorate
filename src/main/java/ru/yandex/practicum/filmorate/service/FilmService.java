@@ -20,7 +20,6 @@ import static ru.yandex.practicum.filmorate.enums.Operation.REMOVE;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final FeedService feedService;
-    private final UserService userService;
 
     public static final LocalDate FIRST_FILM_RELEASE_DATE = LocalDate.of(1895, 12, 28);
 
