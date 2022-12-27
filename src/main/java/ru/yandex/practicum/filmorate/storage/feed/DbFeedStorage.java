@@ -19,7 +19,10 @@ public class DbFeedStorage implements FeedStorage {
     @Override
     public List<Feed> findByUserId(int id) {
 
-        final String sql = "SELECT * FROM FEED WHERE USER_ID = ? ORDER BY timestamp ASC";
+        final String sql = "SELECT * " +
+                "FROM FEED " +
+                "WHERE USER_ID = ? " +
+                "ORDER BY timestamp ASC";
 
         return jdbcTemplate.query(sql, this::makeFeed, id);
     }

@@ -59,14 +59,14 @@ public class FilmService {
 
     public Boolean addLike(int filmId, int userId) {
         log.info("Добавляем лайк пользователя с id {} фильму с id {}.", userId, filmId);
-        boolean like = filmStorage.addLike(filmId, userId);
+        Boolean like = filmStorage.addLike(filmId, userId);
         feedService.add(filmId, userId, LIKE, ADD);
         return like;
     }
 
     public Boolean removeLike(int filmId, int userId) {
         log.info("Удаляем лайк пользователя с id {} фильму с id {}.", userId, filmId);
-        boolean like = filmStorage.removeLike(filmId, userId);
+        Boolean like = filmStorage.removeLike(filmId, userId);
         feedService.add(filmId, userId, LIKE, REMOVE);
         return like;
     }
