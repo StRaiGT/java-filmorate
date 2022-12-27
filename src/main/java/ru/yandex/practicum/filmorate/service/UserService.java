@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IllegalAddFriendException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -12,12 +13,17 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
+import static ru.yandex.practicum.filmorate.enums.EventType.FRIEND;
+import static ru.yandex.practicum.filmorate.enums.Operation.ADD;
+import static ru.yandex.practicum.filmorate.enums.Operation.REMOVE;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FeedService feedService;
 
     private void validate(User user) {
         if (user.getLogin().contains(" ")) {
@@ -61,11 +67,17 @@ public class UserService {
         if (userId == friendId) {
             throw new IllegalAddFriendException("Пользователь не может добавить в друзья себя самого.");
         }
+        getUserById(userId);
+        getUserById(friendId);
+        feedService.add(friendId, userId, FRIEND, ADD);
         return userStorage.addFriend(userId, friendId);
     }
 
     public Boolean removeFriend(int userId, int friendId) {
         log.info("Удаляем из друзей пользователей с id {} и {}.", userId, friendId);
+        getUserById(userId);
+        getUserById(friendId);
+        feedService.add(friendId, userId, FRIEND, REMOVE);
         return userStorage.removeFriend(userId, friendId);
     }
 
@@ -82,5 +94,10 @@ public class UserService {
     public List<Film> receiveFilmRecommendations(int userId) {
         log.info("Выводим рекомендации фильмов для пользователя с id {} ", userId);
         return filmStorage.receiveFilmRecommendations(userId);
+    }
+
+    public List<Feed> getFeedByUserId(Integer id) {
+        getUserById(id);
+        return feedService.getByUserId(id);
     }
 }
