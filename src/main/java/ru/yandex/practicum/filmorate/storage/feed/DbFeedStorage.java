@@ -18,26 +18,30 @@ public class DbFeedStorage implements FeedStorage {
 
     @Override
     public List<Feed> findByUserId(int id) {
+
         final String sql = "SELECT * FROM FEED WHERE USER_ID = ? ORDER BY timestamp ASC";
+
         return jdbcTemplate.query(sql, this::makeFeed, id);
     }
 
     @Override
     public void addFeed(int entityId, int userId, long timestamp, EventType eventType, Operation operation) {
+
         final String sql = "INSERT INTO FEED(ENTITY_ID, USER_ID, timestamp, EVENT_TYPE, OPERATION) " +
                 "VALUES (?, ?, ?, ?, ?)";
+
         jdbcTemplate.update(sql, entityId, userId, timestamp,
                 eventType.toString(), operation.toString());
     }
 
-    private Feed makeFeed(ResultSet rs, int rowNum) throws SQLException {
+    private Feed makeFeed(ResultSet resultSet, int rowNum) throws SQLException {
         return Feed.builder()
-                .eventId(rs.getLong("EVENT_ID"))
-                .entityId(rs.getInt("ENTITY_ID"))
-                .userId(rs.getInt("USER_ID"))
-                .timestamp(rs.getLong("timestamp"))
-                .eventType(EventType.valueOf(rs.getString("EVENT_TYPE")))
-                .operation(Operation.valueOf(rs.getString("OPERATION")))
+                .eventId(resultSet.getLong("EVENT_ID"))
+                .entityId(resultSet.getInt("ENTITY_ID"))
+                .userId(resultSet.getInt("USER_ID"))
+                .timestamp(resultSet.getLong("timestamp"))
+                .eventType(EventType.valueOf(resultSet.getString("EVENT_TYPE")))
+                .operation(Operation.valueOf(resultSet.getString("OPERATION")))
                 .build();
     }
 }

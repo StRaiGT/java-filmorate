@@ -43,9 +43,8 @@ public class ReviewService {
 
     public Boolean removeReview(int id) {
         log.info("Удаление отзыва с id {}", id);
-        Review rw = reviewStorage.getReviewById(id)
-                .orElseThrow(() -> new NotFoundException("Отзыв не найден"));
-        feedService.add(rw.getReviewId(), rw.getUserId(), REVIEW, REMOVE);
+        Optional<Review> review = reviewStorage.getReviewById(id);
+        feedService.add(review.get().getReviewId(), review.get().getUserId(), REVIEW, REMOVE);
         return reviewStorage.removeReview(id);
     }
 
