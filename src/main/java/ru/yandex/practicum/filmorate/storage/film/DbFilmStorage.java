@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -43,12 +44,14 @@ public class DbFilmStorage implements FilmStorage {
                     preparedStatement.setString(2, film.getDescription());
                     preparedStatement.setDate(3, Date.valueOf(film.getReleaseDate()));
                     preparedStatement.setInt(4, film.getDuration());
-                    preparedStatement.setInt(5, film.getMpa().getId());
+                    preparedStatement.setInt(5, film.getMpa()
+                            .getId());
                     return preparedStatement;
                 },
                 keyHolder
         );
-        film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        film.setId(Objects.requireNonNull(keyHolder.getKey())
+                .intValue());
         addFilmGenres(film);
         addFilmDirectors(film);
         return getFilm(film.getId());
@@ -65,7 +68,8 @@ public class DbFilmStorage implements FilmStorage {
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
-                film.getMpa().getId(),
+                film.getMpa()
+                        .getId(),
                 film.getId()
         );
         removeFilmGenres(film);
@@ -124,7 +128,8 @@ public class DbFilmStorage implements FilmStorage {
                 final String sqlQuery = "INSERT INTO FILMS_GENRES " +
                         "VALUES (?, ?)";
                 List<Object[]> batch = new ArrayList<>();
-                film.getGenres().stream()
+                film.getGenres()
+                        .stream()
                         .map(Genre::getId)
                         .distinct()
                         .forEach(genreId -> batch.add(new Object[]{film.getId(), genreId}));
@@ -147,7 +152,8 @@ public class DbFilmStorage implements FilmStorage {
                 final String sqlQuery = "INSERT INTO FILMS_DIRECTORS " +
                         "VALUES (?, ?)";
                 List<Object[]> batch = new ArrayList<>();
-                film.getDirectors().stream()
+                film.getDirectors()
+                        .stream()
                         .map(Director::getId)
                         .distinct()
                         .forEach(directorId -> batch.add(new Object[]{film.getId(), directorId}));
@@ -221,7 +227,8 @@ public class DbFilmStorage implements FilmStorage {
                     .id(resultSet.getInt("FILM_ID"))
                     .name(resultSet.getString("FILMS.NAME"))
                     .description(resultSet.getString("FILMS.DESCRIPTION"))
-                    .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                    .releaseDate(resultSet.getDate("RELEASE_DATE")
+                            .toLocalDate())
                     .duration(resultSet.getInt("DURATION"))
                     .mpa(Mpa.builder()
                             .id(resultSet.getInt("MPA_ID"))
@@ -235,14 +242,18 @@ public class DbFilmStorage implements FilmStorage {
                     .name(resultSet.getString("GENRES.NAME"))
                     .build();
             if (genre.getId() != 0) {
-                films.get(id).getGenres().add(genre);
+                films.get(id)
+                        .getGenres()
+                        .add(genre);
             }
             Director director = Director.builder()
                     .id(resultSet.getInt("DIRECTOR_ID"))
                     .name(resultSet.getString("DIRECTORS.NAME"))
                     .build();
             if (director.getId() != 0) {
-                films.get(id).getDirectors().add(director);
+                films.get(id)
+                        .getDirectors()
+                        .add(director);
             }
         }
         List<Film> orderResult = new ArrayList<>();
@@ -294,12 +305,19 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> receiveFilmRecommendations(int userID) {
-    /*
-    This query searches for a user with the most intersections of liked films with a given user (which id is userID).
-    Then query searches for all films of this user which are not intersected with films of the given user.
-     */
-        final String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, " +
+    public List<Film> receiveFilmRecommendations(int userId) {
+        final String maxIntersectionByLikesUserQuery = "SELECT user_id, COUNT(film_id) AS c " +
+                "FROM likes " +
+                "WHERE film_id IN (" +
+                "SELECT film_id " +
+                "FROM likes " +
+                "WHERE user_id = ?) " +
+                "AND user_id != ? " +
+                "GROUP BY user_id " +
+                "ORDER BY c DESC " +
+                "LIMIT 1;";
+
+        final String recommendedFilmsQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, " +
                 "m.mpa_id, m.name, m.description, " +
                 "g.genre_id, g.name, " +
                 "d.director_id, d.name " +
@@ -309,16 +327,19 @@ public class DbFilmStorage implements FilmStorage {
                 "LEFT JOIN genres AS g ON fg.genre_id = g.genre_id " +
                 "LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id " +
                 "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
-                "WHERE f.film_id IN (SELECT likes.film_id FROM likes " +
-                "WHERE likes.user_id = ( " +
-                "SELECT  likes.user_id FROM likes WHERE " +
-                "likes.film_id IN (SELECT likes.film_id FROM likes WHERE likes.user_id = ?) " +
-                "AND likes.user_id != ? " +
-                "GROUP BY likes.user_id " +
-                "ORDER BY COUNT(likes.film_id) DESC " +
-                "LIMIT 1) " +
-                "AND likes.film_id NOT IN (SELECT likes.film_id FROM likes WHERE likes.user_id = ?)) ";
-        return jdbcTemplate.query(sqlQuery, this::makeFilms, userID, userID, userID);
+                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "WHERE f.film_id NOT IN (" +
+                "SELECT film_id " +
+                "FROM likes " +
+                "WHERE user_id = ?) " +
+                "AND l.user_id = ?";
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(maxIntersectionByLikesUserQuery, userId, userId);
+
+        if (!rowSet.next()) {
+            return new ArrayList<>();
+        }
+        return jdbcTemplate.query(recommendedFilmsQuery, this::makeFilms, userId, rowSet.getInt("user_id"));
     }
 
     @Override
