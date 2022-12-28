@@ -11,8 +11,8 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.director.DbDirectorStorage;
-import ru.yandex.practicum.filmorate.storage.user.DbUserStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -28,8 +28,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class DbFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final DbUserStorage dbUserStorage;
-    private final DbDirectorStorage dbDirectorStorage;
+    private final UserStorage dbUserStorage;
+    private final DirectorStorage dbDirectorStorage;
 
     @Override
     public Film createFilm(Film film) {

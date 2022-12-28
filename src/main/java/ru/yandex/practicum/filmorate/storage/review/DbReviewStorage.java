@@ -167,12 +167,13 @@ public class DbReviewStorage implements ReviewStorage {
     }
 
     private Review makeReview(ResultSet resultSet, int rowNum) throws SQLException {
-        return new Review(
-                resultSet.getInt("REVIEW_ID"),
-                resultSet.getString("CONTENT"),
-                String.valueOf(resultSet.getBoolean("IS_POSITIVE")),
-                resultSet.getInt("USER_ID"),
-                resultSet.getInt("FILM_ID"),
-                resultSet.getInt("USEFUL"));
+        return Review.builder()
+                .reviewId(resultSet.getInt("REVIEW_ID"))
+                .content(resultSet.getString("CONTENT"))
+                .isPositive(resultSet.getBoolean("IS_POSITIVE"))
+                .userId(resultSet.getInt("USER_ID"))
+                .filmId(resultSet.getInt("FILM_ID"))
+                .useful(resultSet.getInt("USEFUL"))
+                .build();
     }
 }

@@ -1,39 +1,31 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 
-@Slf4j
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class Review {
     int reviewId;
+
+    @NotNull
     String content;
 
-    boolean isPositive;
-    int userId;
-    int filmId;
+    Boolean isPositive;
+
+    @NotNull
+    Integer userId;
+
+    @NotNull
+    Integer filmId;
+
     int useful;
-
-    public Review(int reviewId, String content, String isPositive, int userId, int filmId, int useful) {
-        this.reviewId = reviewId;
-        this.content = content;
-        if (isPositive == null) {
-            throw new ValidationException("isPositive cannot be empty");
-        } else this.isPositive = !isPositive.equals("false");
-        this.userId = userId;
-        this.filmId = filmId;
-        this.useful = useful;
-    }
-
-
-    public boolean getIsPositive() {
-        return isPositive;
-    }
 }
 

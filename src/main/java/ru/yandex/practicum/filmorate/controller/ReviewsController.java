@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
+import javax.validation.Valid;
 import java.util.Collection;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,12 +24,12 @@ public class ReviewsController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public Optional<Review> createReview(@RequestBody Review review) {
+    public Review createReview(@Valid @RequestBody Review review) {
         return reviewService.createReview(review);
     }
 
     @PutMapping
-    public Optional<Review> updateReview(@RequestBody Review review) {
+    public Review updateReview(@Valid @RequestBody Review review) {
         return reviewService.updateReview(review);
     }
 
@@ -40,7 +39,7 @@ public class ReviewsController {
     }
 
     @GetMapping("{id}")
-    public Optional<Review> getReviewById(@PathVariable int id) {
+    public Review getReviewById(@PathVariable int id) {
         return reviewService.getReviewById(id);
     }
 

@@ -16,7 +16,7 @@ public class Director implements Comparable<Director>{
     private String name;
 
     @Override
-    public int compareTo(Director o) {
-        return this.id - o.getId();
+    public int compareTo(Director director) {
+        return this.id - director.getId();
     }
 }

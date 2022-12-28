@@ -12,7 +12,7 @@ public class Genre implements Comparable<Genre> {
     private String name;
 
     @Override
-    public int compareTo(Genre o) {
-        return this.id - o.getId();
+    public int compareTo(Genre genre) {
+        return this.id - genre.getId();
     }
 }

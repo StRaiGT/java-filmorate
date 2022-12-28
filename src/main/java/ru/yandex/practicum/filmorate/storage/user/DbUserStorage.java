@@ -70,7 +70,7 @@ public class DbUserStorage implements UserStorage{
                 "FROM USERS " +
                 "WHERE USER_ID = ?";
             return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, userId);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException exception) {
             throw new NotFoundException("Пользователя с таким id не существует.");
         }
     }
@@ -97,7 +97,7 @@ public class DbUserStorage implements UserStorage{
                     "VALUES (?, ?)";
             jdbcTemplate.update(sqlQuery, userId, friendId);
             return true;
-        } catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException exception) {
             throw new NotFoundException("Пользователя с таким id не существует.");
         }
     }

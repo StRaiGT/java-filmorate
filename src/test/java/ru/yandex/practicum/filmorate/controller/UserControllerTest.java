@@ -43,12 +43,12 @@ public class UserControllerTest {
                 .build();
         userController.createUser(user2);
 
-        List<User> arr = new ArrayList<>(userController.getAllUsers());
+        List<User> usersFromController = new ArrayList<>(userController.getAllUsers());
 
-        assertEquals(arr.size(), 2);
+        assertEquals(usersFromController.size(), 2);
 
-        User user1FromController = arr.get(0);
-        User user2FromController = arr.get(1);
+        User user1FromController = usersFromController.get(0);
+        User user2FromController = usersFromController.get(1);
 
         assertEquals(user1FromController.getId(), 1);
         assertEquals(user1FromController.getEmail(), user1.getEmail());
@@ -96,11 +96,11 @@ public class UserControllerTest {
                 .build();
         userController.updateUser(newUser);
 
-        List<User> arr = new ArrayList<>(userController.getAllUsers());
+        List<User> usersFromController = new ArrayList<>(userController.getAllUsers());
 
-        assertEquals(arr.size(), 1);
+        assertEquals(usersFromController.size(), 1);
 
-        User userFromController = arr.get(0);
+        User userFromController = usersFromController.get(0);
 
         assertEquals(userFromController.getId(), newUser.getId());
         assertEquals(userFromController.getEmail(), newUser.getEmail());
@@ -152,12 +152,12 @@ public class UserControllerTest {
                 .birthday(LocalDate.of(1984, 9, 4))
                 .build();
         userController.createUser(user2);
-        List<User> arr = new ArrayList<>(userController.getAllUsers());
+        List<User> usersFromController = new ArrayList<>(userController.getAllUsers());
 
-        assertEquals(arr.size(), 2);
+        assertEquals(usersFromController.size(), 2);
 
-        User userFromController1 = arr.get(0);
-        User userFromController2 = arr.get(1);
+        User userFromController1 = usersFromController.get(0);
+        User userFromController2 = usersFromController.get(1);
 
         assertEquals(userFromController1.getId(), user1.getId());
         assertEquals(userFromController1.getEmail(), user1.getEmail());
@@ -174,9 +174,9 @@ public class UserControllerTest {
 
     @Test
     public void shouldGetEmptyIfNoUsers() {
-        List<User> arr = new ArrayList<>(userController.getAllUsers());
+        List<User> usersFromController = new ArrayList<>(userController.getAllUsers());
 
-        assertEquals(arr.size(), 0);
+        assertEquals(usersFromController.size(), 0);
     }
 
     @Test
@@ -533,17 +533,17 @@ public class UserControllerTest {
                 .build();
         userController.createUser(user3);
 
-        List<User> arr = userController.getAllUsers();
+        List<User> usersFromController = userController.getAllUsers();
 
-        assertEquals(arr.size(), 3);
+        assertEquals(usersFromController.size(), 3);
 
         userController.deleteUser(2);
-        arr = userController.getAllUsers();
+        usersFromController = userController.getAllUsers();
 
-        assertEquals(arr.size(), 2);
+        assertEquals(usersFromController.size(), 2);
 
-        User userFromController1 = arr.get(0);
-        User userFromController2 = arr.get(1);
+        User userFromController1 = usersFromController.get(0);
+        User userFromController2 = usersFromController.get(1);
 
         assertEquals(userFromController1.getId(), user1.getId());
         assertEquals(userFromController1.getEmail(), user1.getEmail());
@@ -560,13 +560,13 @@ public class UserControllerTest {
 
     @Test
     public void shouldDeleteUserNotFound() {
-        List<User> arr = userController.getAllUsers();
+        List<User> usersFromController = userController.getAllUsers();
 
-        assertEquals(arr.size(), 0);
+        assertEquals(usersFromController.size(), 0);
 
         userController.deleteUser(999);
-        arr = userController.getAllUsers();
+        usersFromController = userController.getAllUsers();
 
-        assertEquals(arr.size(), 0);
+        assertEquals(usersFromController.size(), 0);
     }
 }

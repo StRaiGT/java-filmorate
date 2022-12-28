@@ -62,7 +62,7 @@ public class DbDirectorStorage implements DirectorStorage {
                     "FROM DIRECTORS " +
                     "WHERE DIRECTOR_ID = ?";
             return jdbcTemplate.queryForObject(sqlQuery, this::makeDirector, id);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException exception) {
             throw new NotFoundException("Режиссера с таким id не существует.");
         }
     }
