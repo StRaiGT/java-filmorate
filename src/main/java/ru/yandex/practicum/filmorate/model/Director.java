@@ -4,15 +4,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @Setter
 @Builder
-public class Genre implements Comparable<Genre> {
+public class Director implements Comparable<Director>{
     private Integer id;
+
+    @NotBlank
     private String name;
 
     @Override
-    public int compareTo(Genre genre) {
-        return this.id - genre.getId();
+    public int compareTo(Director director) {
+        return this.id - director.getId();
     }
 }

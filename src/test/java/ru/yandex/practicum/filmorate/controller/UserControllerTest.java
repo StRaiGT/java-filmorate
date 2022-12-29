@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.IllegalAddFriendException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -44,12 +43,12 @@ public class UserControllerTest {
                 .build();
         userController.createUser(user2);
 
-        List<User> arr = new ArrayList<>(userController.getAllUsers());
+        List<User> usersFromController = new ArrayList<>(userController.getAllUsers());
 
-        assertEquals(arr.size(), 2);
+        assertEquals(usersFromController.size(), 2);
 
-        User user1FromController = arr.get(0);
-        User user2FromController = arr.get(1);
+        User user1FromController = usersFromController.get(0);
+        User user2FromController = usersFromController.get(1);
 
         assertEquals(user1FromController.getId(), 1);
         assertEquals(user1FromController.getEmail(), user1.getEmail());
@@ -62,28 +61,6 @@ public class UserControllerTest {
         assertEquals(user2FromController.getName(), user2.getLogin());
         assertEquals(user2FromController.getLogin(), user2.getLogin());
         assertEquals(user2FromController.getBirthday(), user2.getBirthday());
-    }
-
-    @Test
-    public void shouldThrowExceptionIfAddUserLoginFound() {
-        User user = User.builder()
-                .email("tester1@yandex.ru")
-                .name("Test name 1")
-                .login("ValidTestLogin1")
-                .birthday(LocalDate.of(1964, 6, 11))
-                .build();
-        userController.createUser(user);
-
-        User newUser = User.builder()
-                .email("tester2@yandex.ru")
-                .name("Test name 2")
-                .login("ValidTestLogin1")
-                .birthday(LocalDate.of(1964, 6, 11))
-                .build();
-
-        AlreadyExistException exception = assertThrows(AlreadyExistException.class, () -> userController.createUser(newUser));
-        assertEquals("Пользователь с таким login уже существует.", exception.getMessage());
-        assertEquals(userController.getAllUsers().size(), 1);
     }
 
     @Test
@@ -119,11 +96,11 @@ public class UserControllerTest {
                 .build();
         userController.updateUser(newUser);
 
-        List<User> arr = new ArrayList<>(userController.getAllUsers());
+        List<User> usersFromController = new ArrayList<>(userController.getAllUsers());
 
-        assertEquals(arr.size(), 1);
+        assertEquals(usersFromController.size(), 1);
 
-        User userFromController = arr.get(0);
+        User userFromController = usersFromController.get(0);
 
         assertEquals(userFromController.getId(), newUser.getId());
         assertEquals(userFromController.getEmail(), newUser.getEmail());
@@ -175,12 +152,12 @@ public class UserControllerTest {
                 .birthday(LocalDate.of(1984, 9, 4))
                 .build();
         userController.createUser(user2);
-        List<User> arr = new ArrayList<>(userController.getAllUsers());
+        List<User> usersFromController = new ArrayList<>(userController.getAllUsers());
 
-        assertEquals(arr.size(), 2);
+        assertEquals(usersFromController.size(), 2);
 
-        User userFromController1 = arr.get(0);
-        User userFromController2 = arr.get(1);
+        User userFromController1 = usersFromController.get(0);
+        User userFromController2 = usersFromController.get(1);
 
         assertEquals(userFromController1.getId(), user1.getId());
         assertEquals(userFromController1.getEmail(), user1.getEmail());
@@ -197,9 +174,9 @@ public class UserControllerTest {
 
     @Test
     public void shouldGetEmptyIfNoUsers() {
-        List<User> arr = new ArrayList<>(userController.getAllUsers());
+        List<User> usersFromController = new ArrayList<>(userController.getAllUsers());
 
-        assertEquals(arr.size(), 0);
+        assertEquals(usersFromController.size(), 0);
     }
 
     @Test
@@ -525,5 +502,71 @@ public class UserControllerTest {
         assertEquals(commonFriends12.size(), 0);
         assertEquals(commonFriends13.size(), 0);
         assertEquals(commonFriends23.size(), 0);
+    }
+
+    @Test
+    public void shouldDeleteUser() {
+        User user1 = User.builder()
+                .id(1)
+                .email("tester1@yandex.ru")
+                .name("Test name 1")
+                .login("ValidTestLogin1")
+                .birthday(LocalDate.of(1964, 6, 11))
+                .build();
+        userController.createUser(user1);
+
+        User user2 = User.builder()
+                .id(2)
+                .email("tester2@yandex.ru")
+                .name("Test name 2")
+                .login("ValidTestLogin2")
+                .birthday(LocalDate.of(1984, 9, 4))
+                .build();
+        userController.createUser(user2);
+
+        User user3 = User.builder()
+                .id(3)
+                .email("tester3@yandex.ru")
+                .name("Test name 3")
+                .login("ValidTestLogin3")
+                .birthday(LocalDate.of(1984, 9, 4))
+                .build();
+        userController.createUser(user3);
+
+        List<User> usersFromController = userController.getAllUsers();
+
+        assertEquals(usersFromController.size(), 3);
+
+        userController.deleteUser(2);
+        usersFromController = userController.getAllUsers();
+
+        assertEquals(usersFromController.size(), 2);
+
+        User userFromController1 = usersFromController.get(0);
+        User userFromController2 = usersFromController.get(1);
+
+        assertEquals(userFromController1.getId(), user1.getId());
+        assertEquals(userFromController1.getEmail(), user1.getEmail());
+        assertEquals(userFromController1.getLogin(), user1.getLogin());
+        assertEquals(userFromController1.getName(), user1.getName());
+        assertEquals(userFromController1.getBirthday(), user1.getBirthday());
+
+        assertEquals(userFromController2.getId(), user3.getId());
+        assertEquals(userFromController2.getEmail(), user3.getEmail());
+        assertEquals(userFromController2.getLogin(), user3.getLogin());
+        assertEquals(userFromController2.getName(), user3.getName());
+        assertEquals(userFromController2.getBirthday(), user3.getBirthday());
+    }
+
+    @Test
+    public void shouldDeleteUserNotFound() {
+        List<User> usersFromController = userController.getAllUsers();
+
+        assertEquals(usersFromController.size(), 0);
+
+        userController.deleteUser(999);
+        usersFromController = userController.getAllUsers();
+
+        assertEquals(usersFromController.size(), 0);
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -51,6 +53,11 @@ public class UserController {
         return userService.updateUser(user);
     }
 
+    @DeleteMapping("/{id}")
+    public Boolean deleteUser(@PathVariable int id) {
+        return userService.deleteUser(id);
+    }
+
     @PutMapping("/{id}/friends/{friendId}")
     public Boolean addFriend(@PathVariable int id, @PathVariable int friendId) {
         return userService.addFriend(id, friendId);
@@ -59,5 +66,14 @@ public class UserController {
     @DeleteMapping("/{id}/friends/{friendId}")
     public Boolean removeFriend(@PathVariable int id, @PathVariable int friendId) {
         return userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> receiveFilmRecommendations(@PathVariable int id) {
+        return userService.receiveFilmRecommendations(id);
+    }
+    @GetMapping("/{id}/feed")
+    public List<Feed> getFeed(@PathVariable Integer id) {
+        return userService.getFeedByUserId(id);
     }
 }
