@@ -48,8 +48,8 @@ public class ReviewService {
 
     public Boolean removeReview(int id) {
         log.info("Удаление отзыва с id {}", id);
-        Review reviewFromController = getReviewById(id);
-        feedService.add(reviewFromController.getReviewId(), reviewFromController.getUserId(), REVIEW, REMOVE);
+        Review review = getReviewById(id);
+        feedService.add(review.getReviewId(), review.getUserId(), REVIEW, REMOVE);
         return reviewStorage.removeReview(id);
     }
 
