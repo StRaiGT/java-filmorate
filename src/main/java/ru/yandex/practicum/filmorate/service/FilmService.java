@@ -77,22 +77,20 @@ public class FilmService {
 
     public List<Film> getFilmsByDirector(int directorId, String sortBy) {
         log.info("Возвращаем фильмы режиссера с id {}.", directorId);
-        List<Film> films;
         if (sortBy.equals("likes")) {
-            films = filmStorage.getFilmsByDirectorSortLikes(directorId);
+            return filmStorage.getFilmsByDirectorSortLikes(directorId);
         } else if (sortBy.equals("year")) {
-            films = filmStorage.getFilmsByDirectorSortYear(directorId);
+            return filmStorage.getFilmsByDirectorSortYear(directorId);
         } else {
-            throw new ValidationException(String.format("Некорректные параметры сортировки в запросе."));
+            throw new ValidationException("Некорректные параметры сортировки в запросе.");
         }
-        return films;
     }
 
     public List<Film> searchFilms(String query, String by) {
         log.info("Возвращаем результат поиска фильмов" +
                 " по запросу {} или по названию фильма или имени режиссёра {}.", query, by);
 
-        query = "%" + query.toLowerCase() + "%";
+        query = String.format("%%%s%%", query.toLowerCase());
 
         String[] byList = by.split(",");
 

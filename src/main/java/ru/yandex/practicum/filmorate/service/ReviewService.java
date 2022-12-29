@@ -42,14 +42,14 @@ public class ReviewService {
         filmStorage.getFilm(review.getFilmId());
 
         feedService.add(review.getReviewId(),
-                reviewStorage.getReviewById(review.getReviewId()).get().getUserId(), REVIEW, UPDATE);
+                getReviewById(review.getReviewId()).getUserId(), REVIEW, UPDATE);
         return reviewStorage.updateReview(review).orElseThrow(() -> new NotFoundException("Отзыв не найден"));
     }
 
     public Boolean removeReview(int id) {
         log.info("Удаление отзыва с id {}", id);
-        Optional<Review> optionalReview = reviewStorage.getReviewById(id);
-        feedService.add(optionalReview.get().getReviewId(), optionalReview.get().getUserId(), REVIEW, REMOVE);
+        Review reviewFromController = getReviewById(id);
+        feedService.add(reviewFromController.getReviewId(), reviewFromController.getUserId(), REVIEW, REMOVE);
         return reviewStorage.removeReview(id);
     }
 
